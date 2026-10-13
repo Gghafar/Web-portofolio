@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from "motion/react";
 import { ArrowUpIcon } from "lucide-react";
+import { useLenis } from "lenis/react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
@@ -10,6 +11,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 export default function BackToTop() {
   const { scrollY } = useScroll();
   const [show, setShow] = useState(false);
+  const lenis = useLenis();
   useMotionValueEvent(scrollY, "change", (y) => setShow(y > window.innerHeight * 0.9));
 
   return (
@@ -30,7 +32,11 @@ export default function BackToTop() {
                 variant="outline"
                 className="size-11 rounded-full bg-card shadow-lg hover:border-[var(--accent)] hover:text-[var(--accent-ink)]"
                 aria-label="Back to top"
-                onClick={() => window.scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" })}
+                onClick={() =>
+                  lenis
+                    ? lenis.scrollTo(0, { duration: 1.4 })
+                    : window.scrollTo({ top: 0, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" })
+                }
               >
                 <ArrowUpIcon className="size-5" />
               </Button>

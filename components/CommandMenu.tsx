@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLenis } from "lenis/react";
+import type Lenis from "lenis";
 import { toast } from "sonner";
 import { BriefcaseIcon, CopyIcon, ExternalLinkIcon, FolderGitIcon, HashIcon, MailIcon, MoonIcon, UsersIcon } from "lucide-react";
 import {
@@ -46,16 +48,39 @@ function filter(value: string, search: string) {
   return 0.5 + (0.5 * wordStarts) / terms.length;
 }
 
-function jumpTo(id: string) {
+/** Glide to an element with the same easing as wheel scrolling (Lenis), or the browser's own scroll without it. */
+function jumpTo(id: string, lenis: Lenis | undefined) {
   const el = document.getElementById(id);
   if (!el) return;
-  el.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  if (lenis) lenis.scrollTo(el, { force: true }); // stops at the element's scroll-margin-top
+  else el.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   history.replaceState(null, "", `#${id}`);
+}
+
+/**
+ * Run `fn` once the dialog has fully closed: Radix removes <body data-scroll-locked> at the end of
+ * the close animation, and only then does SmoothScroll restart Lenis (which would cancel a scroll
+ * started earlier). Waiting also keeps the fading dialog out of the theme-transition snapshot.
+ */
+function afterDialogClosed(fn: () => void) {
+  const body = document.body;
+  let done = false;
+  const go = () => {
+    if (done) return;
+    done = true;
+    mo.disconnect();
+    requestAnimationFrame(fn);
+  };
+  const mo = new MutationObserver(() => !body.hasAttribute("data-scroll-locked") && go());
+  mo.observe(body, { attributes: true, attributeFilter: ["data-scroll-locked"] });
+  if (!body.hasAttribute("data-scroll-locked")) go();
+  window.setTimeout(go, 600); // safety net if the attribute never changes
 }
 
 /** ⌘K / Ctrl+K palette: jump to any section or entry, or run a quick action. */
 export default function CommandMenu() {
   const [open, setOpen] = useState(false);
+  const lenis = useLenis();
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -73,10 +98,11 @@ export default function CommandMenu() {
     };
   }, []);
 
-  /** Close first so the dialog's scroll lock is released before we scroll. */
+  /** Close first so the dialog's scroll lock is released before we scroll or switch theme. */
   const run = (fn: () => void) => () => {
     setOpen(false);
-    requestAnimationFrame(() => requestAnimationFrame(fn));
+    // Defer one frame so React has started closing the dialog before we watch for the unlock.
+    requestAnimationFrame(() => afterDialogClosed(fn));
   };
   /** New tabs must open synchronously inside the key/click event, or popup blockers stop them. */
   const openTab = (url: string) => () => {
@@ -97,7 +123,7 @@ export default function CommandMenu() {
         <CommandEmpty>No results.</CommandEmpty>
         <CommandGroup heading="Sections">
           {NAV.map((s) => (
-            <CommandItem key={s.id} value={`section ${s.label}`} onSelect={run(() => jumpTo(s.id))}>
+            <CommandItem key={s.id} value={`section ${s.label}`} onSelect={run(() => jumpTo(s.id, lenis))}>
               <HashIcon />
               {s.label}
             </CommandItem>
@@ -105,7 +131,7 @@ export default function CommandMenu() {
         </CommandGroup>
         <CommandGroup heading="Projects">
           {[dfk, shooter].map((p) => (
-            <CommandItem key={p.id} value={`project ${p.title} ${p.tags.join(" ")}`} onSelect={run(() => jumpTo(p.id))}>
+            <CommandItem key={p.id} value={`project ${p.title} ${p.tags.join(" ")}`} onSelect={run(() => jumpTo(p.id, lenis))}>
               <FolderGitIcon />
               {p.title}
             </CommandItem>
@@ -113,13 +139,13 @@ export default function CommandMenu() {
         </CommandGroup>
         <CommandGroup heading="Experience">
           {JOBS.map((j) => (
-            <CommandItem key={j.id} value={`work ${j.company} ${j.where}`} onSelect={run(() => jumpTo(j.id))}>
+            <CommandItem key={j.id} value={`work ${j.company} ${j.where}`} onSelect={run(() => jumpTo(j.id, lenis))}>
               <BriefcaseIcon />
               {j.company}
             </CommandItem>
           ))}
           {[...MAJOR_ORGS, ...MINOR_ORGS].map((o) => (
-            <CommandItem key={o.id} value={`organization ${o.name}`} onSelect={run(() => jumpTo(o.id))}>
+            <CommandItem key={o.id} value={`organization ${o.name}`} onSelect={run(() => jumpTo(o.id, lenis))}>
               <UsersIcon />
               {o.name}
             </CommandItem>
@@ -145,7 +171,11 @@ export default function CommandMenu() {
             Open LinkedIn
             <CommandShortcut>↗</CommandShortcut>
           </CommandItem>
-          <CommandItem value="toggle theme dark light mode" onSelect={run(toggleTheme)}>
+          <CommandItem
+            value="toggle theme dark light mode"
+            // run() waits for the dialog to close, so it isn't captured in the transition snapshot.
+            onSelect={run(() => toggleTheme())}
+          >
             <MoonIcon />
             Toggle dark / light mode
           </CommandItem>

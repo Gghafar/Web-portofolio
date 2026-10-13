@@ -78,7 +78,7 @@
     --glass:rgba(15,17,19,.82);
   }
   *,*::before,*::after{box-sizing:border-box}
-  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  html{-webkit-text-size-adjust:100%} /* smooth scrolling comes from Lenis (components/SmoothScroll.tsx) */
   body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6;padding-inline:var(--gutter);-webkit-font-smoothing:antialiased}
   a{color:inherit}
   .container{max-width:1180px;margin-inline:auto}
