@@ -8,6 +8,11 @@
 @import "tailwindcss/utilities.css" layer(utilities);
 @import "tw-animate-css";
 
+/* Tailwind generates any utility whose name appears in the source. These two collide with
+   class names the hand-written CSS already uses (.container for the page width, and the
+   network graph's node classes), so never generate them. */
+@source not inline("container hidden");
+
 @custom-variant dark {
   &:where([data-theme="dark"], [data-theme="dark"] *) { @slot; }
   @media (prefers-color-scheme: dark) {
