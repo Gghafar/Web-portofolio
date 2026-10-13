@@ -300,7 +300,7 @@ export default function PathfindingArena() {
   }, []);
 
   return (
-    <div className="demo">
+    <div className="demo" data-spotlight>
       <div className="demo-top">
         <p className="demo-title">Pathfinding arena</p>
         <span className="badge">Playable</span>

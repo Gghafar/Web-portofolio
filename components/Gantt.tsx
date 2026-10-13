@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useNow } from "@/lib/useNow";
 import { TIMELINE, TIMELINE_END, TIMELINE_START, TIMELINE_YEARS } from "@/data/experience";
 import type { TimelineSeg } from "@/lib/types";
 
@@ -26,14 +27,13 @@ function segLabel(sg: TimelineSeg) {
 
 export default function Gantt() {
   // "Now" depends on the visitor's clock, so the bars are drawn after mount.
-  const [now, setNow] = useState<Date | null>(null);
+  const now = useNow();
   const [readout, setReadout] = useState("Hover or tap a bar to see its dates.");
-  useEffect(() => setNow(new Date()), []);
 
   const years = TIMELINE_YEARS.map((y) => ({ y, left: pct(new Date(y, 0, 1)).toFixed(2) + "%" }));
 
   return (
-    <div className="gantt">
+    <div className="gantt" data-spotlight>
       <div className="g-top">
         <p className="g-readout">{readout}</p>
         <ul className="legend">

@@ -1,3 +1,4 @@
+import Reveal from "./motion/Reveal";
 import { Fragment } from "react";
 import MtlaDemo from "./MtlaDemo";
 import PathfindingArena from "./PathfindingArena";
@@ -33,23 +34,23 @@ function ProjectInfo({ p }: { p: Project }) {
 export default function Projects() {
   return (
     <section className="sec" id="work">
-      <div className="sec-head">
+      <Reveal className="sec-head">
         <div>
           <p className="eyebrow">Projects · 2025 – 2026</p>
           <h2>Projects</h2>
         </div>
         <p className="sec-intro">A language model served in production and a game with enemies that hunt you down. Each one has a small demo you can run on this page.</p>
-      </div>
+      </Reveal>
 
-      <article className="project" id={dfk.id}>
+      <Reveal as="article" className="project" id={dfk.id}>
         <ProjectInfo p={dfk} />
         <MtlaDemo />
-      </article>
+      </Reveal>
 
-      <article className="project" id={shooter.id}>
+      <Reveal as="article" className="project" id={shooter.id}>
         <ProjectInfo p={shooter} />
         <PathfindingArena />
-      </article>
+      </Reveal>
     </section>
   );
 }

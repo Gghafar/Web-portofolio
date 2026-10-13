@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import Reveal from "./motion/Reveal";
 import { DEFAULT_ACTIVE, EVIDENCE, NEEDS, SKILLS, W1, W2, W3 } from "@/data/network";
 import { profile } from "@/data/profile";
 import type { EvidenceKind } from "@/lib/types";
@@ -383,13 +384,13 @@ export default function NetworkSection() {
 
   return (
     <section className="sec" id="network" ref={rootRef}>
-      <div className="sec-head">
+      <Reveal className="sec-head">
         <div>
           <p className="eyebrow">Interactive · forward pass</p>
           <h2>What are you hiring for?</h2>
         </div>
         <p className="sec-intro">Switch on the inputs that match your role. The signal runs through the skills I have used and lights up the work that proves them. Hover a node to trace its paths, or click it for details.</p>
-      </div>
+      </Reveal>
       <div className="chips" id="chips" role="group" aria-label="Hiring needs (input layer)"></div>
       <div className="chip-tools">
         <button className="linkbtn" type="button" id="all-on">Switch all on</button>
@@ -401,8 +402,8 @@ export default function NetworkSection() {
       </div>
       <p className="scroll-hint">Swipe sideways to see the whole network →</p>
       <div className="net-panels">
-        <div className="panel" id="inspector" aria-live="polite"></div>
-        <div className="panel">
+        <div className="panel" id="inspector" aria-live="polite" data-spotlight></div>
+        <div className="panel" data-spotlight>
           <p className="eyebrow">Output · ranked</p>
           <h3>Strongest evidence for your selection</h3>
           <ol className="rank" id="rank"></ol>
