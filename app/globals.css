@@ -387,3 +387,16 @@
   /* Hero: the orange node pops in after the name. */
   .name .node{vertical-align:baseline}
 }
+
+/* ---------- theme switch: wave reveal (lib/themeTransition.ts) ---------- */
+@layer components {
+  /* View Transitions: drop the default crossfade; the new snapshot is revealed with an animated clip-path. */
+  ::view-transition-old(root),
+  ::view-transition-new(root){animation:none;mix-blend-mode:normal}
+  ::view-transition-new(root){z-index:2}
+  ::view-transition-old(root){z-index:1}
+
+  /* Fallback for browsers without View Transitions: colours glide instead of snapping. */
+  .theme-fading,.theme-fading *,.theme-fading *::before,.theme-fading *::after{
+    transition:background-color .3s ease,color .3s ease,border-color .3s ease,fill .3s ease,stroke .3s ease!important}
+}
