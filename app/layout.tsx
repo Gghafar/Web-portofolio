@@ -6,6 +6,7 @@ import MotionProvider from "@/components/motion/MotionProvider";
 import Spotlight from "@/components/motion/Spotlight";
 import CommandMenu from "@/components/CommandMenu";
 import BackToTop from "@/components/BackToTop";
+import SmoothScroll from "@/components/SmoothScroll";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
@@ -42,13 +43,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         <MotionProvider>
-          <TooltipProvider delayDuration={250}>
-            {children}
-            <CommandMenu />
-            <BackToTop />
-            <Spotlight />
-            <Toaster position="bottom-center" />
-          </TooltipProvider>
+          <SmoothScroll>
+            <TooltipProvider delayDuration={250}>
+              {children}
+              <CommandMenu />
+              <BackToTop />
+              <Spotlight />
+              <Toaster position="bottom-center" />
+            </TooltipProvider>
+          </SmoothScroll>
         </MotionProvider>
       </body>
     </html>

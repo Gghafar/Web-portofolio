@@ -78,7 +78,7 @@
     --glass:rgba(15,17,19,.82);
   }
   *,*::before,*::after{box-sizing:border-box}
-  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  html{-webkit-text-size-adjust:100%} /* smooth scrolling comes from Lenis (components/SmoothScroll.tsx) */
   body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6;padding-inline:var(--gutter);-webkit-font-smoothing:antialiased}
   a{color:inherit}
   .container{max-width:1180px;margin-inline:auto}
@@ -372,7 +372,11 @@
   .nav-ind{position:absolute;left:0;right:0;bottom:-1px;height:2px;border-radius:2px;background:var(--accent)}
   .topbar-tools{display:flex;align-items:center;gap:4px;margin-left:clamp(4px,1.6vw,16px)}
   .kbd{font:500 10.5px var(--f-mono);letter-spacing:.02em;color:var(--muted);border:1px solid var(--line-strong);border-radius:5px;padding:1px 5px;line-height:1.5}
-  @media (max-width:600px){.topbar-tools .kbd{display:none}.nav{gap:10px}}
+  /* The tools (⌘K, theme) need room too: tighten the nav earlier than the original 600px breakpoint
+     so the topbar never overflows the viewport (it did between ~600 and ~760px). */
+  @media (max-width:860px){.nav a::before{display:none}.topbar-tools .kbd{display:none}}
+  @media (max-width:760px){.brand span{display:none}}
+  @media (max-width:600px){.nav{gap:10px}}
   @media (max-width:420px){.nav a[href="#network"]{display:none}}
   .progress span{width:100%!important;transform-origin:0 50%}
 
@@ -382,4 +386,17 @@
 
   /* Hero: the orange node pops in after the name. */
   .name .node{vertical-align:baseline}
+}
+
+/* ---------- theme switch: wave reveal (lib/themeTransition.ts) ---------- */
+@layer components {
+  /* View Transitions: drop the default crossfade; the new snapshot is revealed with an animated clip-path. */
+  ::view-transition-old(root),
+  ::view-transition-new(root){animation:none;mix-blend-mode:normal}
+  ::view-transition-new(root){z-index:2}
+  ::view-transition-old(root){z-index:1}
+
+  /* Fallback for browsers without View Transitions: colours glide instead of snapping. */
+  .theme-fading,.theme-fading *,.theme-fading *::before,.theme-fading *::after{
+    transition:background-color .3s ease,color .3s ease,border-color .3s ease,fill .3s ease,stroke .3s ease!important}
 }

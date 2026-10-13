@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { THEME_KEY as KEY } from "./theme-script";
+import { transitionTheme } from "./themeTransition";
 
 export type Theme = "light" | "dark";
 const DARK_MQ = "(prefers-color-scheme: dark)";
@@ -32,8 +33,10 @@ export function setTheme(theme: Theme) {
   }
 }
 
+/** Switch light ↔ dark with the wave reveal spreading out from the centre of the screen. */
 export function toggleTheme() {
-  setTheme(resolved() === "dark" ? "light" : "dark");
+  const next = resolved() === "dark" ? "light" : "dark";
+  transitionTheme(() => setTheme(next));
 }
 
 /** The theme actually on screen: the saved choice, else the OS preference. `null` during SSR. */
