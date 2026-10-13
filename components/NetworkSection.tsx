@@ -133,7 +133,8 @@ export default function NetworkSection() {
     }
 
     function makeNode(n: NetNode) {
-      const cls = ["input", "hidden", "evid", "out"][n.layer];
+      // Not "hidden": that is a Tailwind utility (display:none) and would erase the skill layer.
+      const cls = ["input", "skill", "evid", "out"][n.layer];
       const g = mk("g", { class: "node " + cls, tabindex: 0, role: "button", "data-id": n.id }, gNodes);
       n.g = g;
       if (n.layer < 3) {
