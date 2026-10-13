@@ -1,17 +1,20 @@
 # syntax=docker/dockerfile:1
 #
 # Dockerfile = daftar langkah untuk membuat image website ini.
-# Ada 2 tahap ("multi-stage"): MASAK pakai Node, lalu SAJIKAN pakai Nginx.
+# Intinya 2 tahap ("multi-stage"): MASAK pakai Node, lalu SAJIKAN pakai Nginx.
 # Hanya tahap terakhir yang jadi image akhir, jadi Node & node_modules tidak ikut terbawa.
+#
+#   deps ──┬──► dev    (untuk development, dipakai compose.yaml)
+#          └──► build ──► web   (image production, tahap default)
 #
 # Build : docker build -t portfolio .
 # Jalan : docker run --rm -p 8080:8080 portfolio   → buka http://localhost:8080
 # Panduan lengkap: docs/DOCKER.md
 
 
-# ───────────── Tahap 1: MASAK (build website) ─────────────
+# ───────────── Tahap deps: install dependency ─────────────
 # Mulai dari image Node 22 versi "alpine" (Linux mini, ukurannya kecil).
-FROM node:22-alpine AS build
+FROM node:22-alpine AS deps
 
 # Semua perintah berikutnya dijalankan di folder /app di dalam container.
 WORKDIR /app
@@ -22,22 +25,36 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
-# Baru salin seluruh kode (file di .dockerignore tidak ikut), lalu build.
-COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
+
+
+# ───────────── Tahap dev: server development (hot reload) ─────────────
+# Dipakai oleh `docker compose watch dev`. Compose menyalin perubahan kode ke sini,
+# dan `next dev` otomatis memuat ulang halaman.
+FROM deps AS dev
+COPY . .
+EXPOSE 3000
+# --hostname 0.0.0.0 → dengarkan di semua alamat, supaya bisa dibuka dari laptop (bukan cuma dari dalam container).
+CMD ["npm", "run", "dev", "--", "--hostname", "0.0.0.0"]
+
+
+# ───────────── Tahap build: MASAK (build website) ─────────────
+FROM deps AS build
+# Salin seluruh kode (file di .dockerignore tidak ikut), lalu build.
+COPY . .
 RUN npm run build
 # Hasilnya: website statis di /app/out
 
 
-# ───────────── Tahap 2: SAJIKAN (web server) ─────────────
+# ───────────── Tahap web: SAJIKAN (image production) ─────────────
 # Nginx versi "unprivileged": berjalan sebagai user biasa (bukan root) → lebih aman.
 # Karena bukan root, ia mendengarkan di port 8080 (bukan 80).
-FROM nginxinc/nginx-unprivileged:1.29-alpine
+FROM nginxinc/nginx-unprivileged:1.29-alpine AS web
 
 # Ganti pengaturan bawaan Nginx dengan milik kita.
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
 
-# Ambil HANYA folder hasil build dari tahap 1.
+# Ambil HANYA folder hasil build dari tahap build.
 COPY --from=build /app/out /usr/share/nginx/html
 
 # Catatan bahwa container ini melayani di port 8080 (dibuka ke laptop lewat `-p`).
