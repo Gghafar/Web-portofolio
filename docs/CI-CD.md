@@ -38,6 +38,9 @@ gitGraph
 4. Buka PR `feature → main`. CI jalan lagi.
 5. Merge ke `main`, lalu Vercel men-deploy ke **Production**.
 
+> **Alur saat ini:** branch `feature` sudah dihapus setelah PR #2, jadi sekarang alurnya lebih pendek:
+> branch kerja (`feat/...` / `fix/...`) → **PR ke `main`** → merge. Aturannya tetap: jangan pernah commit langsung di `main`.
+
 ## 3. Apa yang dilakukan `ci.yml`
 
 ```
@@ -113,9 +116,22 @@ Supaya kode yang gagal CI **tidak bisa** di-merge:
 
 Hasilnya, tombol **Merge** di PR terkunci sampai CI hijau.
 
+## 5b. Workflow Docker
+
+`.github/workflows/docker.yml` jalan di setiap PR & push ke `main`:
+
+```
+Lint Dockerfile (hadolint)  ──►  Build, test & push image
+```
+
+- **PR:** lint + build image + *smoke test* (container harus *healthy*, halaman utama berisi "Gandrung Ghafar", URL ngasal = 404). Tidak ada yang di-upload.
+- **Merge ke `main`:** semua di atas + upload image `amd64` & `arm64` ke `ghcr.io/gghafar/web-portofolio` (tag `latest` & `sha-<commit>`).
+
+Penjelasan lengkap Docker ada di [DOCKER.md](DOCKER.md).
+
 ## 6. Dependabot
 
-`.github/dependabot.yml` membuat PR otomatis (ke branch `feature`) ketika ada update dependency atau versi GitHub Action. Setiap PR itu juga menjalankan CI, jadi kamu langsung tahu apakah update aman.
+`.github/dependabot.yml` membuat PR otomatis (ke branch `main`) ketika ada update dependency npm, versi GitHub Action, atau base image Docker. Setiap PR itu juga menjalankan CI, jadi kamu langsung tahu apakah update aman.
 
 ## 7. Membaca hasil CI
 
