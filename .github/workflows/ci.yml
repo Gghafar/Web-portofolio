@@ -1,0 +1,93 @@
+# CI = Continuous Integration
+# Every time code is pushed or a pull request is opened, GitHub spins up a fresh
+# Linux machine, installs the project from scratch, and checks that it still works.
+# If any step fails, the PR shows a red ❌ and you know before merging.
+#
+# Guide (Bahasa Indonesia): docs/CI-CD.md
+
+name: CI
+
+on:
+  # Run on PRs that target the two long-lived branches...
+  pull_request:
+    branches: [main, feature]
+  # ...and again after something actually lands on them.
+  push:
+    branches: [main, feature]
+  # Lets the deploy workflow reuse this file as a step ("reusable workflow").
+  workflow_call:
+  # Adds a "Run workflow" button in the Actions tab for manual runs.
+  workflow_dispatch:
+
+# Pushing twice quickly to the same branch cancels the older, now-useless run.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# Least privilege: CI only needs to read the code.
+permissions:
+  contents: read
+
+env:
+  NEXT_TELEMETRY_DISABLED: 1
+
+jobs:
+  quality:
+    name: Lint & typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js (version from .nvmrc)
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm # caches ~/.npm keyed on package-lock.json, so installs get faster
+
+      - name: Install dependencies (exactly as in package-lock.json)
+        run: npm ci
+
+      - name: Lint (ESLint)
+        run: npm run lint
+
+      - name: Typecheck (tsc)
+        run: npm run typecheck
+
+  build:
+    name: Build
+    # Only build once the cheaper checks have passed.
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      # Next.js keeps a build cache in .next/cache; restoring it speeds up later builds.
+      - name: Restore Next.js build cache
+        uses: actions/cache@v6
+        with:
+          path: .next/cache
+          key: nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-${{ hashFiles('app/**', 'components/**', 'data/**', 'lib/**') }}
+          restore-keys: |
+            nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-
+
+      - name: Build static site
+        run: npm run build
+
+      # The exported site (out/) is saved for 7 days; download it from the run's
+      # Summary page to inspect exactly what would be deployed.
+      - name: Upload build output
+        uses: actions/upload-artifact@v7
+        with:
+          name: site-${{ github.sha }}
+          path: out
+          retention-days: 7
