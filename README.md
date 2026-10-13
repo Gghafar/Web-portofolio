@@ -1,6 +1,7 @@
 # Gandrung Ghafar — Portfolio
 
 [![CI](https://github.com/Gghafar/Web-portofolio/actions/workflows/ci.yml/badge.svg)](https://github.com/Gghafar/Web-portofolio/actions/workflows/ci.yml)
+[![Docker](https://github.com/Gghafar/Web-portofolio/actions/workflows/docker.yml/badge.svg)](https://github.com/Gghafar/Web-portofolio/actions/workflows/docker.yml)
 
 Personal portfolio built with **Next.js (App Router) + TypeScript**, exported as a static site and deployed on **Vercel**.
 UI extras use **Motion** for animation and **shadcn/ui** (Radix + Tailwind v4) for the command menu, tooltips and toasts.
@@ -13,6 +14,19 @@ npm run dev        # http://localhost:3000
 npm run build      # static export to ./out
 npm run check      # lint + typecheck + build — the same checks CI runs
 ```
+
+## Run with Docker
+
+```bash
+npm run docker:dev     # dev server with hot reload in a container → http://localhost:3000
+npm run docker:prod    # production image (Nginx serving the static export) → http://localhost:8080
+npm run docker:down    # stop and remove the containers
+
+docker run --rm -p 8080:8080 ghcr.io/gghafar/web-portofolio:latest   # prebuilt image from GHCR
+```
+
+The multi-stage [`Dockerfile`](Dockerfile) builds the site with Node and serves only `out/` from unprivileged Nginx
+(±24 MB download). See [docs/DOCKER.md](docs/DOCKER.md) for a step-by-step guide (Bahasa Indonesia).
 
 ## Updating content
 
@@ -54,12 +68,14 @@ data/           content
 components/ui/  shadcn/ui primitives (button, command, dialog, tooltip, sonner)
 components/motion/  small Motion building blocks
 lib/            types, theme store, cn() helper
-.github/        CI/CD workflows, Dependabot, PR template
-docs/CI-CD.md   CI/CD guide (Bahasa Indonesia)
+.github/        CI/CD workflows (CI, Docker, optional Vercel deploy), Dependabot, PR template
+Dockerfile, compose.yaml, docker/   container image, dev/prod services, Nginx config
+docs/           CI/CD and Docker guides (Bahasa Indonesia)
 ```
 
 ## Branches, CI and deploy
 
-`feat/*` branch → PR into `feature` → PR into `main`. Every PR runs **CI** (GitHub Actions: lint, typecheck, build).
-Vercel deploys a preview for each PR and production on every push to `main`.
+Work happens on a `feat/*` or `fix/*` branch → PR into `main`. Every PR runs **CI** (lint, typecheck, build) and
+**Docker** (lint the Dockerfile, build the image, smoke-test the container). After a merge to `main`, the Docker
+workflow pushes the image to GHCR, and Vercel deploys production; Vercel also deploys a preview for each PR.
 See [docs/CI-CD.md](docs/CI-CD.md) for the full walkthrough, including the optional deploy-through-Actions workflow.

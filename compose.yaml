@@ -1,0 +1,42 @@
+# Docker Compose: menyalakan container cukup dengan satu perintah pendek,
+# tanpa mengetik `docker build ...` + `docker run -p ...` yang panjang.
+#
+#   npm run docker:dev    → docker compose watch dev       (development, http://localhost:3000)
+#   npm run docker:prod   → docker compose up --build web  (production,  http://localhost:8080)
+#   npm run docker:down   → docker compose down            (matikan & hapus container)
+#
+# Panduan lengkap: docs/DOCKER.md
+
+services:
+  # ── Development: edit kode → browser langsung berubah ──
+  dev:
+    build:
+      context: .
+      target: dev # pakai tahap "dev" dari Dockerfile
+    ports:
+      - "3000:3000" # laptop:container
+    # "Compose Watch": pantau file di laptop dan sinkronkan ke container.
+    develop:
+      watch:
+        # Kode berubah → salin file-nya ke /app di container (next dev memuat ulang sendiri).
+        - action: sync
+          path: .
+          target: /app
+          ignore:
+            - node_modules/
+            - .next/
+            - out/
+        # Dependency berubah → build ulang image (npm ci jalan lagi).
+        - action: rebuild
+          path: package.json
+        - action: rebuild
+          path: package-lock.json
+
+  # ── Production: sama persis dengan image hasil `docker build` di Step 2 ──
+  web:
+    build:
+      context: .
+      target: web
+    ports:
+      - "8080:8080"
+    restart: unless-stopped

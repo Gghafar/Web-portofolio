@@ -1,0 +1,148 @@
+# Docker: membangun, mengetes, dan menyimpan image website.
+#
+#   lint  ──►  build & test  ──►  push ke GHCR (hanya setelah merge ke main)
+#   (hadolint)  (docker build → nyalakan container → cek halaman)
+#
+# Di PR      : lint + build + test saja (tidak ada yang di-upload).
+# Di main    : semua di atas + upload image ke ghcr.io/gghafar/web-portofolio
+#              dengan tag `latest` dan `sha-<kode commit>`, untuk chip amd64 & arm64.
+# Panduan: docs/DOCKER.md
+
+name: Docker
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: docker-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint Dockerfile
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+
+      # hadolint = "pemeriksa tata bahasa" untuk Dockerfile (best practice & kesalahan umum).
+      - name: Run hadolint
+        uses: hadolint/hadolint-action@v3.5.0
+        with:
+          dockerfile: Dockerfile
+
+  image:
+    name: Build, test & push image
+    needs: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      packages: write # izin meng-upload image ke GitHub Container Registry
+    steps:
+      - uses: actions/checkout@v7
+
+      # Buildx = mesin build Docker versi modern (mendukung cache & multi-platform).
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      # Sama dengan `docker build -t portfolio:test .` di laptop.
+      # load: true → image disimpan di runner supaya bisa dijalankan di langkah berikutnya.
+      # cache gha → layer disimpan di cache GitHub, build berikutnya lebih cepat.
+      - name: Build image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          target: web
+          load: true
+          tags: portfolio:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # "Smoke test": nyalakan container lalu cek apakah benar-benar melayani website.
+      - name: Smoke test the container
+        run: |
+          docker run -d --name portfolio -p 8080:8080 portfolio:test
+
+          echo "⏳ Menunggu HEALTHCHECK menyatakan container sehat..."
+          for i in $(seq 1 30); do
+            status=$(docker inspect -f '{{.State.Health.Status}}' portfolio)
+            [ "$status" = "healthy" ] && break
+            sleep 1
+          done
+          echo "Status: $status"
+          [ "$status" = "healthy" ] || { echo "❌ container tidak sehat"; exit 1; }
+
+          echo "🔎 Halaman utama harus 200 dan berisi nama"
+          curl -fsS http://localhost:8080/ | grep -q "Gandrung Ghafar"
+
+          echo "🔎 Halaman yang tidak ada harus 404"
+          code=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/halaman-tidak-ada)
+          [ "$code" = "404" ] || { echo "❌ dapat $code, harusnya 404"; exit 1; }
+
+          echo "✅ Semua tes lolos"
+
+      - name: Show container logs (only if a step failed)
+        if: failure()
+        run: docker logs portfolio || true
+
+      - name: Show image size
+        if: success()
+        run: |
+          docker image ls portfolio:test
+          echo "### 🐳 Image size: $(docker image inspect portfolio:test --format '{{.Size}}' | numfmt --to=iec)" >> "$GITHUB_STEP_SUMMARY"
+
+      # ───── Mulai dari sini hanya jalan setelah merge ke main (bukan di PR) ─────
+
+      # Login ke GHCR memakai token otomatis dari GitHub (tidak perlu membuat secret).
+      - name: Log in to GitHub Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Menentukan nama & tag image: ghcr.io/gghafar/web-portofolio:latest dan :sha-abc1234.
+      # Juga menambah label (mis. link ke repo ini) supaya image muncul di halaman repo.
+      - name: Decide image tags
+        if: github.event_name != 'pull_request'
+        id: meta
+        uses: docker/metadata-action@v6
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha
+
+      # Build untuk 2 chip lalu upload. Layer diambil dari cache build di atas, jadi cepat.
+      - name: Build & push (amd64 + arm64)
+        if: github.event_name != 'pull_request'
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          target: web
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Summary
+        if: github.event_name != 'pull_request'
+        run: |
+          {
+            echo "### 📦 Pushed to GHCR"
+            echo '```'
+            echo "${{ steps.meta.outputs.tags }}"
+            echo '```'
+            echo "Jalankan di mana saja: \`docker run -p 8080:8080 ghcr.io/${GITHUB_REPOSITORY,,}:latest\`"
+          } >> "$GITHUB_STEP_SUMMARY"

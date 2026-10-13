@@ -1,0 +1,28 @@
+# File/folder yang TIDAK dikirim ke Docker saat build (mirip .gitignore).
+# Tujuannya: build lebih cepat, image lebih kecil, dan tidak ada rahasia yang ikut masuk.
+
+# dipasang ulang di dalam container lewat `npm ci`
+node_modules
+
+# hasil build lama di laptop (dibuat ulang di dalam container)
+.next
+out
+*.tsbuildinfo
+
+# tidak dibutuhkan untuk membangun website
+.git
+.github
+.claude
+.vercel
+docs
+*.md
+.DS_Store
+npm-debug.log*
+
+# rahasia / environment lokal
+.env*
+
+# file Docker itu sendiri
+Dockerfile
+.dockerignore
+compose.yaml
