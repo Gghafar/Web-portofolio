@@ -17,7 +17,7 @@
 # --platform=$BUILDPLATFORM: tahap Node selalu jalan di chip mesin yang sedang build.
 # Hasil build (HTML/JS/CSS) sama untuk semua chip, jadi saat membuat image untuk
 # amd64 + arm64 sekaligus (Step 5), hanya tahap Nginx yang dibuat per chip → cepat.
-FROM --platform=$BUILDPLATFORM node:22-alpine AS deps
+FROM --platform=$BUILDPLATFORM node:26-alpine AS deps
 
 # Semua perintah berikutnya dijalankan di folder /app di dalam container.
 WORKDIR /app
