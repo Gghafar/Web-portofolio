@@ -1,0 +1,84 @@
+# CD = Continuous Deployment
+#
+# This repo is ALREADY deployed by Vercel's GitHub integration (Vercel watches the repo
+# and deploys every push on its own). This workflow is the "do it yourself" version,
+# for learning how CD works inside GitHub Actions. It is OFF by default.
+#
+# To turn it on (see docs/CI-CD.md, "Mode B"):
+#   1. Add secrets: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID
+#   2. Add a repository variable: DEPLOY_WITH_ACTIONS = true
+#   3. Turn off Vercel's own Git deployments so nothing deploys twice.
+#
+# Flow: CI must pass first  ->  PR gets a Preview URL  /  push to main goes to Production.
+
+name: Deploy
+
+on:
+  pull_request:
+    branches: [main, feature]
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false # never cancel a deployment halfway
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: CI
+    if: vars.DEPLOY_WITH_ACTIONS == 'true'
+    # Reuse the whole CI pipeline instead of copy-pasting its steps.
+    uses: ./.github/workflows/ci.yml
+
+  deploy:
+    name: Deploy to Vercel (${{ github.event_name == 'push' && 'production' || 'preview' }})
+    needs: ci # deploy only if CI passed
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pull-requests: write # to comment the preview URL on the PR
+    # GitHub "environments" show deployments on the repo page and can require approval.
+    environment:
+      name: ${{ github.event_name == 'push' && 'production' || 'preview' }}
+      url: ${{ steps.deploy.outputs.url }}
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_ENV: ${{ github.event_name == 'push' && 'production' || 'preview' }}
+      PROD_FLAG: ${{ github.event_name == 'push' && '--prod' || '' }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@63
+
+      - name: Pull Vercel project settings
+        run: vercel pull --yes --environment=$VERCEL_ENV --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Build on the runner
+        run: vercel build $PROD_FLAG --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Upload the prebuilt output
+        id: deploy
+        run: |
+          url=$(vercel deploy --prebuilt $PROD_FLAG --token=${{ secrets.VERCEL_TOKEN }})
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "### Deployed to $VERCEL_ENV 🚀" >> "$GITHUB_STEP_SUMMARY"
+          echo "$url" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Comment the preview URL on the PR
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }} --edit-last --create-if-none \
+            --body "🔍 Preview for \`${{ github.event.pull_request.head.sha }}\`: ${{ steps.deploy.outputs.url }}"

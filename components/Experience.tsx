@@ -1,10 +1,11 @@
+import Reveal from "./motion/Reveal";
 import Gantt from "./Gantt";
 import { JOBS, MAJOR_ORGS, MINOR_ORGS } from "@/data/experience";
 import type { Job, Org } from "@/lib/types";
 
 function JobEntry({ job }: { job: Job }) {
   return (
-    <article className="job" id={job.id}>
+    <Reveal as="article" className="job" id={job.id}>
       <div className="job-when">
         <span>{job.when}</span>
         <span>{job.place}</span>
@@ -24,13 +25,13 @@ function JobEntry({ job }: { job: Job }) {
           </div>
         )}
       </div>
-    </article>
+    </Reveal>
   );
 }
 
-function OrgCard({ org }: { org: Org }) {
+function OrgCard({ org, index = 0 }: { org: Org; index?: number }) {
   return (
-    <article className="org" id={org.id}>
+    <Reveal as="article" className="org" id={org.id} data-spotlight delay={index * 0.08}>
       <div>
         <h4>{org.name}</h4>
         <p className="where">{org.where}</p>
@@ -41,7 +42,7 @@ function OrgCard({ org }: { org: Org }) {
         ))}
       </ol>
       <ul>{org.points.map((p) => <li key={p}>{p}</li>)}</ul>
-    </article>
+    </Reveal>
   );
 }
 
@@ -60,15 +61,17 @@ function StepItem({ step, promoted }: { step: Org["steps"][number]; promoted: bo
 export default function Experience() {
   return (
     <section className="sec" id="experience">
-      <div className="sec-head">
+      <Reveal className="sec-head">
         <div>
           <p className="eyebrow">Work &amp; organizations · 2023 – 2026</p>
           <h2>Experience</h2>
         </div>
         <p className="sec-intro">In 2026 I worked at the Ministry of Communication and Digital Affairs and then at PT PELNI. Before that I helped run events at ITS and twice came back the following year as Expert Staff.</p>
-      </div>
+      </Reveal>
 
-      <Gantt />
+      <Reveal>
+        <Gantt />
+      </Reveal>
 
       <h3 className="group-h">Work</h3>
       <div className="jobs">
@@ -77,10 +80,10 @@ export default function Experience() {
 
       <h3 className="group-h">Organizations</h3>
       <div className="orgs major">
-        {MAJOR_ORGS.map((o) => <OrgCard key={o.id} org={o} />)}
+        {MAJOR_ORGS.map((o, i) => <OrgCard key={o.id} org={o} index={i} />)}
       </div>
       <div className="orgs minor">
-        {MINOR_ORGS.map((o) => <OrgCard key={o.id} org={o} />)}
+        {MINOR_ORGS.map((o, i) => <OrgCard key={o.id} org={o} index={i} />)}
       </div>
     </section>
   );

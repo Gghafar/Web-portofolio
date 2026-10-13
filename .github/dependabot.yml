@@ -1,0 +1,21 @@
+# Dependabot opens PRs when dependencies have updates. Each of those PRs runs CI,
+# so you can see whether an update breaks anything before merging it.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    target-branch: feature # updates flow through feature -> main like any other change
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      # One PR for all minor/patch bumps instead of a dozen small ones.
+      minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: feature
+    schedule:
+      interval: monthly
