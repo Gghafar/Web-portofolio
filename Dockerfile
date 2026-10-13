@@ -59,3 +59,10 @@ COPY --from=build /app/out /usr/share/nginx/html
 
 # Catatan bahwa container ini melayani di port 8080 (dibuka ke laptop lewat `-p`).
 EXPOSE 8080
+
+# Docker mengecek sendiri apakah container sehat dengan membuka /healthz secara berkala.
+# Status terlihat di `docker ps` (healthy / unhealthy) dan dipakai tes di GitHub Actions.
+# --start-interval: saat baru menyala, cek tiap 1 detik supaya cepat dinyatakan sehat.
+# Format JSON ["...", "..."] dijalankan langsung tanpa shell (saran hadolint DL3025).
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --start-interval=1s --retries=3 \
+  CMD ["wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/healthz"]
