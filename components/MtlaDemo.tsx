@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { MTLA_SAMPLE } from "@/data/projects";
 
 const LABELS = ["label_0", "label_1", "label_2", "label_3", "label_4"];
@@ -49,17 +49,18 @@ export default function MtlaDemo() {
   const [shown, setShown] = useState(5);
   const [done, setDone] = useState(true);
 
+  /** How many times the visitor has run it; seeds the sampler and keys the rows so they re-animate. */
+  const [runCount, setRunCount] = useState(0);
+
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
-  const runCount = useRef(0);
-  const latest = useRef({ text, n });
-  latest.current = { text, n };
   const rangeRef = useRef<HTMLInputElement>(null);
 
   const run = () => {
     timers.current.forEach(clearTimeout);
-    timers.current = [];
-    runCount.current++;
-    const r = simulate(latest.current.text, latest.current.n, runCount.current);
+    timers.current.length = 0; // clear in place: the unmount cleanup holds this same array
+    const next = runCount + 1;
+    setRunCount(next);
+    const r = simulate(text, n, next);
     setResult(r);
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setShown(r.N);
@@ -71,17 +72,17 @@ export default function MtlaDemo() {
     r.trials.forEach((_, i) => timers.current.push(setTimeout(() => setShown(i + 1), 140 + i * 170)));
     timers.current.push(setTimeout(() => setDone(true), 240 + r.trials.length * 170));
   };
-  const runRef = useRef(run);
-  runRef.current = run;
-
   // Re-run when the slider is released (native "change"), not on every drag step.
+  // useEffectEvent lets the listener call the latest `run` without re-subscribing each render.
+  const onSliderRelease = useEffectEvent(run);
   useEffect(() => {
     const el = rangeRef.current;
-    const onChange = () => runRef.current();
+    const pending = timers.current;
+    const onChange = () => onSliderRelease();
     el?.addEventListener("change", onChange);
     return () => {
       el?.removeEventListener("change", onChange);
-      timers.current.forEach(clearTimeout);
+      pending.forEach(clearTimeout);
     };
   }, []);
 
@@ -91,7 +92,7 @@ export default function MtlaDemo() {
   const first = trials[0];
 
   return (
-    <div className="demo" id="mtla">
+    <div className="demo" id="mtla" data-spotlight>
       <div className="demo-top">
         <p className="demo-title">Multi-Trial Logit Averaging</p>
         <span className="badge">Simulated demo</span>
@@ -107,12 +108,12 @@ export default function MtlaDemo() {
           <output htmlFor="mtla-n">{n}</output>
         </div>
         <button className="btn primary sm" type="button" disabled={!done} onClick={run}>
-          {runCount.current === 0 && done ? "Run inference" : "Run again"}
+          {runCount === 0 ? "Run inference" : "Run again"}
         </button>
       </div>
       <div className="trials" aria-live="polite">
         {trials.slice(0, shown).map((t, i) => (
-          <div key={`${runCount.current}-${i}`} className={done && t.lab === win.i ? "trial win" : "trial"}>
+          <div key={`${runCount}-${i}`} className={done && t.lab === win.i ? "trial win" : "trial"}>
             <span>trial {i + 1}</span>
             <span className="toks">{t.toks.map((p, j) => <i key={j} style={{ height: `${Math.round(p * 100)}%` }}></i>)}</span>
             <span className="lab">{LABELS[t.lab]}</span>
