@@ -1,11 +1,21 @@
 /**
- * Artwork for desktop file icons (44×44 tiles) and dock buttons (24×24 strokes),
- * taken from the "Portfolio Desktop" design. Keyed by window id.
+ * Artwork for desktop file icons (44×44 tiles, from the "Portfolio Desktop" design) and the dock icons.
+ * Keyed by window id.
  */
 
-type Tile = { bg: string; art: React.ReactNode };
+import {
+  Briefcase,
+  EnvelopeSimple,
+  FolderSimple,
+  Images,
+  Medal,
+  Trash,
+  User,
+  UsersThree,
+} from "@phosphor-icons/react/dist/ssr";
+import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
 
-const S = { fill: "none", strokeLinecap: "round", strokeLinejoin: "round" } as const;
+type Tile = { bg: string; art: React.ReactNode };
 
 export const TILES: Record<string, Tile> = {
   about: {
@@ -264,109 +274,77 @@ export function TileArt({ id, size = 42 }: { id: string; size?: number }) {
   );
 }
 
-type DockGlyph = { bg: string; fg: string; art: React.ReactNode };
+/**
+ * Dock icons. Most are clear glass tiles with a coloured duotone glyph (Phosphor), matching the glass dock.
+ * Brand apps (LinkedIn, Instagram) keep their official look instead: a filled tile with the brand mark.
+ */
+type DockIcon =
+  | { kind: "glass"; color: string; Icon: PhosphorIcon }
+  | { kind: "brand"; bg: string; art: React.ReactNode };
 
-export const DOCK_GLYPHS: Record<string, DockGlyph> = {
-  about: {
-    bg: "#F2C14E",
-    fg: "#111111",
-    art: (
-      <>
-        <circle cx="12" cy="8" r="4" />
-        <path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" />
-      </>
-    ),
-  },
-  projects: { bg: "#0E1B4D", fg: "#ffffff", art: <path d="M3 7h6l2 2h10v10H3z" /> },
-  experience: {
-    bg: "#1F4D3A",
-    fg: "#ffffff",
-    art: (
-      <>
-        <rect x="3" y="7" width="18" height="13" rx="2" />
-        <path d="M9 7V5h6v2M3 13h18" />
-      </>
-    ),
-  },
-  organizations: {
-    bg: "#C8232B",
-    fg: "#ffffff",
-    art: (
-      <>
-        <circle cx="9" cy="8" r="3" />
-        <circle cx="17" cy="9" r="2.5" />
-        <path d="M3 20c.8-3.5 3-5 6-5s5.2 1.5 6 5M15 15.5c2.6 0 4.4 1.3 5 4.5" />
-      </>
-    ),
-  },
-  certificates: {
-    bg: "#ffffff",
-    fg: "#111111",
-    art: (
-      <>
-        <circle cx="12" cy="9" r="6" />
-        <path d="M8.5 14 7 22l5-3 5 3-1.5-8" />
-      </>
-    ),
-  },
-  photos: {
-    bg: "#0F766E",
-    fg: "#ffffff",
-    art: (
-      <>
-        <rect x="3" y="5" width="18" height="14" rx="2" />
-        <circle cx="16" cy="9.5" r="1.5" />
-        <path d="m3 16 5-5 4 4 2.5-2.5L21 18" />
-      </>
-    ),
-  },
+const DOCK_ICONS: Record<string, DockIcon> = {
+  about: { kind: "glass", color: "#D9931A", Icon: User },
+  projects: { kind: "glass", color: "#2747B8", Icon: FolderSimple },
+  experience: { kind: "glass", color: "#1F7A52", Icon: Briefcase },
+  organizations: { kind: "glass", color: "#D03340", Icon: UsersThree },
+  certificates: { kind: "glass", color: "#7A5AF0", Icon: Medal },
+  photos: { kind: "glass", color: "#139A86", Icon: Images },
+  contact: { kind: "glass", color: "#2F6BFF", Icon: EnvelopeSimple },
+  closeAll: { kind: "glass", color: "#5F5E5A", Icon: Trash },
   github: {
-    bg: "#161616",
-    fg: "#ffffff",
+    kind: "brand",
+    bg: "#1B1F24",
+    // The GitHub mark (Invertocat), white on GitHub's near-black.
     art: (
-      <>
-        <circle cx="6" cy="5" r="2" />
-        <circle cx="6" cy="19" r="2" />
-        <circle cx="18" cy="7" r="2" />
-        <path d="M6 7v10M18 9c0 5-6 4-11 8.5" />
-      </>
+      <path
+        fill="#ffffff"
+        d="M12 .3a12 12 0 0 0-3.8 23.38c.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.2.09 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.62-5.48 5.92.43.37.81 1.1.81 2.22v3.29c0 .32.22.7.83.58A12 12 0 0 0 12 .3"
+      />
     ),
   },
   linkedin: {
+    kind: "brand",
     bg: "#0A66C2",
-    fg: "#ffffff",
     art: (
-      <>
-        <rect x="3" y="5" width="18" height="14" rx="2" />
-        <circle cx="9" cy="11" r="2" />
-        <path d="M5.8 16.5c.6-1.6 1.8-2.4 3.2-2.4s2.6.8 3.2 2.4M14.5 10h4M14.5 13.5h3" />
-      </>
+      <g fill="#ffffff">
+        <rect x="5.4" y="9.6" width="3.1" height="9" rx=".3" />
+        <circle cx="6.95" cy="6.6" r="1.8" />
+        <path d="M10.7 9.6h3v1.3c.5-.9 1.6-1.6 3.2-1.6 2.6 0 3.6 1.7 3.6 4.3v5h-3.1v-4.5c0-1.2-.3-2.2-1.6-2.2-1.4 0-2 1-2 2.3v4.4h-3.1z" />
+      </g>
     ),
   },
-  contact: {
-    bg: "#2F6BFF",
-    fg: "#ffffff",
+  instagram: {
+    kind: "brand",
+    // The app icon's gradient: yellow bottom-left through orange and magenta to violet top-right.
+    bg: "radial-gradient(circle at 30% 107%, #FDF497 0%, #FDF497 5%, #FD5949 45%, #D6249F 60%, #285AEB 90%)",
     art: (
-      <>
-        <rect x="3" y="5" width="18" height="14" rx="2" />
-        <path d="m3 7 9 6 9-6" />
-      </>
+      <g fill="none" stroke="#ffffff" strokeWidth="1.9">
+        <rect x="4.5" y="4.5" width="15" height="15" rx="4.4" />
+        <circle cx="12" cy="12" r="3.6" />
+        <circle cx="16.4" cy="7.6" r=".55" fill="#ffffff" stroke="none" />
+      </g>
     ),
   },
-  closeAll: { bg: "#E4E4E0", fg: "#111111", art: <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" /> },
 };
 
-/** Stroke icon for a dock button (or a desktop tile for windows without a dock glyph). */
+/** Clear glass, so the dock's own glass shows through a little. */
+const GLASS_BG = "linear-gradient(180deg, rgba(255,255,255,.82) 0%, rgba(255,255,255,.5) 100%)";
+
+/** The glyph inside a dock button (or a desktop tile for windows without a dock icon, e.g. minimized ones). */
 export function DockArt({ id }: { id: string }) {
-  const g = DOCK_GLYPHS[id];
+  const g = DOCK_ICONS[id];
   if (!g) return <TileArt id={id} size={30} />;
+  if (g.kind === "glass") return <g.Icon weight="duotone" color={g.color} size="58%" aria-hidden="true" />;
   return (
-    <svg viewBox="0 0 24 24" width="55%" height="55%" stroke={g.fg} strokeWidth="1.8" {...S} aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="62%" height="62%" aria-hidden="true">
       {g.art}
     </svg>
   );
 }
 
 export function dockBg(id: string) {
-  return DOCK_GLYPHS[id]?.bg ?? "#ffffff";
+  const g = DOCK_ICONS[id];
+  return !g || g.kind === "glass" ? GLASS_BG : g.bg;
 }
+
+export const isGlassIcon = (id: string) => DOCK_ICONS[id]?.kind !== "brand";

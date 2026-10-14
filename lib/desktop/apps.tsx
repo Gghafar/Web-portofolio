@@ -286,6 +286,19 @@ const LIST: AppDef[] = [
     tags: ["LinkedIn"],
     url: { href: profile.linkedin, label: "Open LinkedIn profile" },
   }), "Other", 520),
+  // Only once there is a username to link to (data/profile.ts).
+  ...(profile.instagramUser
+    ? [
+        detail("instagram", "Instagram", "apps/instagram", () => ({
+          kicker: "App · Instagram",
+          title: `@${profile.instagramUser}`,
+          meta: `instagram.com/${profile.instagramUser}`,
+          body: <p>Life outside campus and work: running, hiking, and time with friends.</p>,
+          tags: ["Instagram"],
+          url: { href: `https://www.instagram.com/${profile.instagramUser}/`, label: "Open Instagram profile" },
+        }), "Other", 520),
+      ]
+    : []),
 ];
 
 export const APPS: Record<string, AppDef> = Object.fromEntries(LIST.map((a) => [a.id, a]));
