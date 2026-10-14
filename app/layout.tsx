@@ -1,24 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { Archivo, Hanken_Grotesk, Martian_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Schibsted_Grotesk } from "next/font/google";
 import { profile } from "@/data/profile";
-import { themeInitScript } from "@/lib/theme-script";
 import MotionProvider from "@/components/motion/MotionProvider";
-import Spotlight from "@/components/motion/Spotlight";
 import CommandMenu from "@/components/CommandMenu";
-import BackToTop from "@/components/BackToTop";
-import SmoothScroll from "@/components/SmoothScroll";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/sonner";
+import { LiquidGlassFilter } from "@/components/ui/liquid-glass-button";
 import "./globals.css";
 
-const archivo = Archivo({ subsets: ["latin"], axes: ["wdth"], variable: "--font-archivo", display: "swap" });
-const hanken = Hanken_Grotesk({ subsets: ["latin"], variable: "--font-hanken", display: "swap" });
-const martian = Martian_Mono({ subsets: ["latin"], axes: ["wdth"], variable: "--font-martian", display: "swap" });
+const geist = Geist({ subsets: ["latin"], variable: "--font-geist", display: "swap" });
+const geistMono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono", display: "swap" });
+const schibsted = Schibsted_Grotesk({ subsets: ["latin"], weight: ["600", "700", "800"], variable: "--font-schibsted", display: "swap" });
 
-const description = `${profile.name}, AI Engineering student at ITS. ${profile.lede}`;
+const description = `${profile.name}, ${profile.role}. ${profile.lede}`;
 
 export const metadata: Metadata = {
-  title: profile.name,
+  title: `${profile.name} — Portfolio Desktop`,
   description,
   openGraph: { title: profile.name, description, type: "profile" },
   twitter: { card: "summary", title: profile.name, description },
@@ -28,30 +25,21 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F5F6F3" },
-    { media: "(prefers-color-scheme: dark)", color: "#0F1113" },
-  ],
+  themeColor: "#EFEFEC",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    // suppressHydrationWarning: the inline script may set data-theme before React hydrates.
-    <html lang="en" className={`${archivo.variable} ${hanken.variable} ${martian.variable}`} suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-      </head>
+    <html lang="en" className={`${geist.variable} ${geistMono.variable} ${schibsted.variable}`}>
       <body>
+        {/* The SVG filter every liquid-glass button distorts its backdrop with (one copy per page). */}
+        <LiquidGlassFilter />
         <MotionProvider>
-          <SmoothScroll>
-            <TooltipProvider delayDuration={250}>
-              {children}
-              <CommandMenu />
-              <BackToTop />
-              <Spotlight />
-              <Toaster position="bottom-center" />
-            </TooltipProvider>
-          </SmoothScroll>
+          <TooltipProvider delayDuration={250}>
+            {children}
+            <CommandMenu />
+            <Toaster position="bottom-center" />
+          </TooltipProvider>
         </MotionProvider>
       </body>
     </html>

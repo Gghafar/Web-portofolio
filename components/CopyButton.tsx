@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { toast } from "sonner";
 import { CheckIcon, CopyIcon } from "lucide-react";
+import { LiquidButton } from "@/components/ui/liquid-glass-button";
 
 /** Copies `text`; if the clipboard API is unavailable, selects the element `targetId` so the visitor can copy by hand. */
 export default function CopyButton({ text, targetId, label = "Copy email" }: { text: string; targetId: string; label?: string }) {
@@ -39,10 +40,10 @@ export default function CopyButton({ text, targetId, label = "Copy email" }: { t
   };
 
   return (
-    <motion.button
-      className="btn primary"
+    <LiquidButton
       type="button"
-      whileTap={{ scale: 0.95 }}
+      size="lg"
+      className="rounded-full font-semibold"
       onClick={() => {
         try {
           navigator.clipboard.writeText(text).then(success, fallback);
@@ -65,6 +66,6 @@ export default function CopyButton({ text, targetId, label = "Copy email" }: { t
         </motion.span>
       </AnimatePresence>
       <span className="bl">{msg}</span>
-    </motion.button>
+    </LiquidButton>
   );
 }

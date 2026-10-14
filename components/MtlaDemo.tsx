@@ -2,6 +2,7 @@
 
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { MTLA_SAMPLE } from "@/data/projects";
+import { LiquidButton } from "@/components/ui/liquid-glass-button";
 
 const LABELS = ["label_0", "label_1", "label_2", "label_3", "label_4"];
 const fmt = (v: number) => v.toFixed(2);
@@ -92,7 +93,7 @@ export default function MtlaDemo() {
   const first = trials[0];
 
   return (
-    <div className="demo" id="mtla" data-spotlight>
+    <div className="demo">
       <div className="demo-top">
         <p className="demo-title">Multi-Trial Logit Averaging</p>
         <span className="badge">Simulated demo</span>
@@ -107,9 +108,9 @@ export default function MtlaDemo() {
           <input ref={rangeRef} type="range" id="mtla-n" min={1} max={9} step={1} value={n} onChange={(e) => setN(+e.target.value)} />
           <output htmlFor="mtla-n">{n}</output>
         </div>
-        <button className="btn primary sm" type="button" disabled={!done} onClick={run}>
+        <LiquidButton type="button" size="default" className="rounded-full font-semibold" disabled={!done} onClick={run}>
           {runCount === 0 ? "Run inference" : "Run again"}
-        </button>
+        </LiquidButton>
       </div>
       <div className="trials" aria-live="polite">
         {trials.slice(0, shown).map((t, i) => (
