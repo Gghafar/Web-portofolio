@@ -63,11 +63,7 @@ export const ALBUMS: Album[] = [
     title: "IDEAS 2025",
     group: "Organizations",
     folder: "organizations/ideas",
-    photos: [
-      { file: "img-6020.jpg", alt: "The IDEAS team with students in a school hall", date: "2025-01-16" },
-      { file: "img-2036.jpg", alt: "The IDEAS team with teachers in a classroom", date: "2025-01-17" },
-      { file: "img-2937.jpg", alt: "At the Electics & Medics booth (FTEIC × FKK)", date: "2025-01-25" },
-    ],
+    photos: [{ file: "img-2937.jpg", alt: "At the Electics & Medics booth (FTEIC × FKK)", date: "2025-01-25" }],
   },
   {
     id: "inclenation",
