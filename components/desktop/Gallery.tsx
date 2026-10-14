@@ -14,14 +14,72 @@ function formatDate(date: string) {
   return `${d} ${MONTHS[m - 1]} ${y}`;
 }
 
-const photoSrc = (a: Album, p: Photo, thumb = false) => `/gallery/${a.folder}/${thumb ? "thumbs/" : ""}${p.file}`;
+export const photoSrc = (a: Album, p: Photo, thumb = false) => `/gallery/${a.folder}/${thumb ? "thumbs/" : ""}${p.file}`;
+
+/** Full-screen viewer for one photo of `album`; arrows and ←/→ step through the album. `open` = index or null. */
+export function Lightbox({ album, open, onOpen }: { album: Album; open: number | null; onOpen: (i: number | null) => void }) {
+  const n = album.photos.length;
+  const step = (by: number) => open !== null && onOpen((open + by + n) % n);
+  const photo = open === null ? null : album.photos[open];
+
+  return (
+    <Dialog.Root open={photo !== null} onOpenChange={(o) => !o && onOpen(null)}>
+      <Dialog.Portal>
+        <Dialog.Overlay className="lb-overlay" />
+        <Dialog.Content
+          className="lb"
+          aria-describedby={undefined}
+          onKeyDown={(e) => {
+            if (e.key === "ArrowRight") step(1);
+            else if (e.key === "ArrowLeft") step(-1);
+          }}
+          // A click on the dark space around the photo closes it, like the overlay would.
+          onClick={(e) => e.target === e.currentTarget && onOpen(null)}
+        >
+          {photo && (
+            <>
+              <div className="lb-bar">
+                <Dialog.Title className="lb-title">
+                  {album.title} · {open! + 1} / {n}
+                </Dialog.Title>
+                <Dialog.Close className="lb-btn" aria-label="Close">
+                  <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                    <path d="M6 6l12 12M18 6 6 18" />
+                  </svg>
+                </Dialog.Close>
+              </div>
+              <div className="lb-stage" onClick={(e) => e.target === e.currentTarget && onOpen(null)}>
+                <Image key={photo.file} src={photoSrc(album, photo)} alt={photo.alt} fill sizes="100vw" priority />
+              </div>
+              <p className="lb-cap">
+                {photo.alt}
+                <span>{formatDate(photo.date)}</span>
+              </p>
+              {n > 1 && (
+                <>
+                  <button type="button" className="lb-btn lb-prev" onClick={() => step(-1)} aria-label="Previous photo">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M15 5l-7 7 7 7" />
+                    </svg>
+                  </button>
+                  <button type="button" className="lb-btn lb-next" onClick={() => step(1)} aria-label="Next photo">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </>
+              )}
+            </>
+          )}
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+}
 
 /** A grid of square thumbnails; clicking one opens it full screen. */
 export function PhotoGrid({ album }: { album: Album }) {
   const [open, setOpen] = useState<number | null>(null);
-  const n = album.photos.length;
-  const step = (by: number) => setOpen((i) => (i === null ? i : (i + by + n) % n));
-  const photo = open === null ? null : album.photos[open];
 
   return (
     <>
@@ -34,58 +92,7 @@ export function PhotoGrid({ album }: { album: Album }) {
           </li>
         ))}
       </ul>
-
-      <Dialog.Root open={photo !== null} onOpenChange={(o) => !o && setOpen(null)}>
-        <Dialog.Portal>
-          <Dialog.Overlay className="lb-overlay" />
-          <Dialog.Content
-            className="lb"
-            aria-describedby={undefined}
-            onKeyDown={(e) => {
-              if (e.key === "ArrowRight") step(1);
-              else if (e.key === "ArrowLeft") step(-1);
-            }}
-            // A click on the dark space around the photo closes it, like the overlay would.
-            onClick={(e) => e.target === e.currentTarget && setOpen(null)}
-          >
-            {photo && (
-              <>
-                <div className="lb-bar">
-                  <Dialog.Title className="lb-title">
-                    {album.title} · {open! + 1} / {n}
-                  </Dialog.Title>
-                  <Dialog.Close className="lb-btn" aria-label="Close">
-                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
-                      <path d="M6 6l12 12M18 6 6 18" />
-                    </svg>
-                  </Dialog.Close>
-                </div>
-                <div className="lb-stage" onClick={(e) => e.target === e.currentTarget && setOpen(null)}>
-                  <Image key={photo.file} src={photoSrc(album, photo)} alt={photo.alt} fill sizes="100vw" priority />
-                </div>
-                <p className="lb-cap">
-                  {photo.alt}
-                  <span>{formatDate(photo.date)}</span>
-                </p>
-                {n > 1 && (
-                  <>
-                    <button type="button" className="lb-btn lb-prev" onClick={() => step(-1)} aria-label="Previous photo">
-                      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <path d="M15 5l-7 7 7 7" />
-                      </svg>
-                    </button>
-                    <button type="button" className="lb-btn lb-next" onClick={() => step(1)} aria-label="Next photo">
-                      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                        <path d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  </>
-                )}
-              </>
-            )}
-          </Dialog.Content>
-        </Dialog.Portal>
-      </Dialog.Root>
+      <Lightbox album={album} open={open} onOpen={setOpen} />
     </>
   );
 }

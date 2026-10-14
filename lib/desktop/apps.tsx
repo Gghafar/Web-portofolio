@@ -2,6 +2,7 @@
 
 import { AboutView, ContactView, DetailView, FolderView, ToolkitView, type Detail } from "@/components/desktop/views";
 import { AlbumSection, PhotosView } from "@/components/desktop/Gallery";
+import { Hobbies } from "@/components/desktop/Hobbies";
 import MtlaDemo from "@/components/MtlaDemo";
 import PathfindingArena from "@/components/PathfindingArena";
 import NetworkSection from "@/components/NetworkSection";
@@ -249,10 +250,11 @@ const LIST: AppDef[] = [
   }), "Certificates", 520),
 
   // ── Other files ──
-  app("about", "About", "about.txt", 600, () => {
-    const album = albumFor("about");
-    return <AboutView>{album && <AlbumSection album={album} title="Outside work" />}</AboutView>;
-  }, "Other"),
+  app("about", "About", "about.txt", 600, () => (
+    <AboutView>
+      <Hobbies />
+    </AboutView>
+  ), "Other"),
   app("toolkit", "Toolkit", "toolkit", 640, () => <ToolkitView />, "Other"),
   app("contact", "Contact", "say_hello", 560, () => <ContactView />, "Other"),
   detail("cv", "CV", "cv", () => ({

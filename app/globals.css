@@ -338,6 +338,22 @@
   .photo-btn:hover img{transform:scale(1.05)}
   .photo-btn:focus-visible{outline:2px solid var(--desk-ink);outline-offset:2px}
 
+  /* About → "Outside campus": one card per hobby */
+  .hobbies-intro{margin:0;font-size:15.5px;line-height:1.55;color:#222220}
+  .hobbies{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .hobby{display:flex;flex-direction:column;border:1px solid #E6E6E1;border-radius:10px;overflow:hidden;background:#fff}
+  .hobby-photo{position:relative;display:block;width:100%;aspect-ratio:4/3;padding:0;border:0;background:#E9E9E5;cursor:zoom-in;overflow:hidden}
+  .hobby-photo img{object-fit:cover;transition:transform .35s ease}
+  .hobby-photo:hover img{transform:scale(1.04)}
+  .hobby-photo:focus-visible{outline:2px solid var(--desk-ink);outline-offset:-2px}
+  .hobby-count{position:absolute;right:8px;bottom:8px;padding:3px 8px;border-radius:999px;background:rgba(17,17,17,.72);color:#fff;font:500 11px var(--f-mono)}
+  .hobby-text{display:flex;flex-direction:column;gap:4px;padding:12px 14px 14px}
+  .hobby-text h4{margin:0;font:700 16px var(--f-display)}
+  .hobby-text p{margin:0;font-size:14px;line-height:1.5;color:#2A2A28}
+  .hobby-text .dv-note{margin-top:4px}
+  @media (prefers-reduced-motion:reduce){.hobby-photo img{transition:none}}
+  @media (max-width:520px){.hobbies{grid-template-columns:minmax(0,1fr)}}
+
   .lb-overlay{position:fixed;inset:0;z-index:2000;background:rgba(12,12,11,.86);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);animation:lb-fade .2s ease}
   .lb{position:fixed;inset:0;z-index:2001;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:12px;padding:14px 16px 18px;color:#F5F5F2;outline:none;animation:lb-fade .2s ease}
   .lb-bar{display:flex;align-items:center;justify-content:space-between;gap:12px}
