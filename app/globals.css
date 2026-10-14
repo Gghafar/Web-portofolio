@@ -249,7 +249,7 @@
 
   /* menu bar */
   .menubar{position:absolute;inset:0 0 auto 0;z-index:900;height:34px;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:0 12px;
-    background:rgba(250,250,248,.62);border-bottom:1px solid rgba(0,0,0,.06);-webkit-backdrop-filter:blur(20px) saturate(1.4);backdrop-filter:blur(20px) saturate(1.4);font-size:13px}
+    background:transparent;font-size:13px}
   .menubar-left{display:flex;align-items:center;gap:2px;min-width:0;flex:1 1 auto}
   .menubar-right{display:flex;align-items:center;gap:12px;flex-shrink:0;padding-right:4px}
   .mb{appearance:none;border:0;background:none;height:28px;padding:0 10px;display:inline-flex;align-items:center;border-radius:5px;color:var(--desk-ink);font:inherit;font-size:13px;cursor:pointer;white-space:nowrap}
@@ -415,7 +415,8 @@
     .ic{width:104px}
     .desk-hint{display:none}
     .mb-hide{display:none}
-    .menubar{position:fixed}
+    /* icons scroll under the fixed bar on phones, so keep a frosted backing there */
+    .menubar{position:fixed;background:rgba(250,250,248,.62);-webkit-backdrop-filter:blur(20px) saturate(1.4);backdrop-filter:blur(20px) saturate(1.4)}
     /* full width, from under the menu bar down to just above the dock */
     .mac-win{position:fixed;left:0;top:34px;width:100%;height:calc(100dvh - 34px - 82px);max-height:none;border-radius:0 0 14px 14px;border-inline:0}
     .mac-titlebar{cursor:default}
