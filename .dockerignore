@@ -26,3 +26,6 @@ npm-debug.log*
 Dockerfile
 .dockerignore
 compose.yaml
+
+# foto asli (HEIC ukuran penuh); versi web ada di public/gallery
+_originals

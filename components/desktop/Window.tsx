@@ -3,9 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import { motion, useDragControls, useMotionValue, useReducedMotion } from "motion/react";
 import { desktop, type Win } from "@/lib/desktop/store";
+import { genie } from "@/lib/desktop/genie";
 import type { AppDef } from "@/lib/desktop/apps";
 
 const OPEN = { type: "spring", stiffness: 360, damping: 32, mass: 0.8 } as const;
+/** A dock-icon-sized box centred on `p`. */
+const around = (p: { x: number; y: number }) => ({ x: p.x - 24, y: p.y - 24, w: 48, h: 48 });
 
 type Props = {
   win: Win;
@@ -34,6 +37,25 @@ export default function Window({ win, app, focused, compact, bounds }: Props) {
   useEffect(() => {
     if (!win.minimized) ref.current?.focus({ preventScroll: true });
   }, [win.minimized]);
+
+  // Minimize / restore play the genie effect between the window and its dock icon. The real window is
+  // hidden meanwhile: on minimize it is already invisible (opacity 0 below), on restore it waits here.
+  const wasMinimized = useRef(win.minimized);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || reduce || wasMinimized.current === win.minimized) return;
+    wasMinimized.current = win.minimized;
+    if (win.minimized) {
+      const icon = document.querySelector(`[data-win="${win.id}"]`)?.getBoundingClientRect();
+      void genie(el, icon ? { x: icon.left, y: icon.top, w: icon.width, h: icon.height } : around(win.origin), "in");
+    } else {
+      el.style.visibility = "hidden";
+      void genie(el, around(win.origin), "out").then(() => {
+        el.style.visibility = "";
+        el.focus({ preventScroll: true });
+      });
+    }
+  }, [win.minimized, win.id, win.origin, reduce]);
 
   const full = compact || win.maximized;
   // The point the window grows from / shrinks to, in the window's own coordinates.
@@ -82,7 +104,10 @@ export default function Window({ win, app, focused, compact, bounds }: Props) {
       initial={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.08 }}
       animate={
         win.minimized
-          ? { opacity: 0, scale: reduce ? 1 : 0.06, transition: { duration: 0.32, ease: [0.4, 0, 0.6, 1] } }
+          ? reduce
+            ? { opacity: 0, transition: { duration: 0.2 } }
+            : // The genie effect (above) does the visible part; the window itself just disappears.
+              { opacity: 0, scale: 1, transition: { duration: 0 } }
           : { opacity: 1, scale: 1, transition: OPEN }
       }
       exit={{ opacity: 0, scale: reduce ? 1 : 0.92, transition: { duration: 0.16 } }}

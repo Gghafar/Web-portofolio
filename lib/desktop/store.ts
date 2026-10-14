@@ -83,7 +83,8 @@ export const desktop = {
     if (existing) {
       set({
         topZ,
-        wins: state.wins.map((w) => (w.id === id ? { ...w, z: topZ, minimized: false, origin: w.minimized ? dockPoint() : w.origin } : w)),
+        // Coming back from the dock: grow out of the button that was clicked (the dock icon).
+        wins: state.wins.map((w) => (w.id === id ? { ...w, z: topZ, minimized: false, origin: w.minimized ? (r ? origin : dockPoint()) : w.origin } : w)),
       });
       return;
     }

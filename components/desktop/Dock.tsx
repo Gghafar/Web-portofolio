@@ -60,6 +60,7 @@ export default function Dock() {
             key={w.id}
             mouseX={mouseX}
             label={`Restore ${APPS[w.id]?.name ?? w.id}`}
+            winId={w.id}
             bg="#ffffff"
             running
             onClick={(el) => desktop.open(w.id, APPS[w.id]?.width ?? 560, el)}
@@ -76,6 +77,7 @@ function DockButton({
   mouseX,
   label,
   bg,
+  winId,
   running,
   onClick,
   children,
@@ -83,6 +85,8 @@ function DockButton({
   mouseX: MotionValue<number>;
   label: string;
   bg: string;
+  /** For a minimized window's button: the genie effect aims at it. */
+  winId?: string;
   running: boolean;
   onClick: (el: HTMLElement) => void;
   children: React.ReactNode;
@@ -103,6 +107,7 @@ function DockButton({
         className="dock-btn"
         aria-label={label}
         title={label}
+        data-win={winId}
         style={{ width: size, height: size, background: bg }}
         whileTap={{ scale: 0.88 }}
         onClick={(e) => onClick(e.currentTarget)}

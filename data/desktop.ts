@@ -3,6 +3,8 @@
  * Every `app` is a window id from lib/desktop/apps.tsx; the same ids work as URL hashes (/#mtla).
  */
 
+import { profile } from "./profile";
+
 export type DesktopIconDef = {
   app: string;
   label: string;
@@ -50,11 +52,14 @@ export const DOCK_MAIN: DockItemDef[] = [
   { app: "experience", label: "Experience", running: ["experience"] },
   { app: "organizations", label: "Organizations", running: ["organizations"] },
   { app: "certificates", label: "Certificates", running: ["certificates"] },
+  { app: "photos", label: "Photos", running: ["photos"] },
 ];
 
 export const DOCK_LINKS: DockItemDef[] = [
   { app: "github", label: "GitHub", running: ["github"] },
   { app: "linkedin", label: "LinkedIn", running: ["linkedin"] },
+  // Shown once profile.instagramUser is filled in.
+  ...(profile.instagramUser ? [{ app: "instagram", label: "Instagram", running: ["instagram"] }] : []),
 ];
 
 export const DOCK_END: DockItemDef[] = [{ app: "contact", label: "Contact", running: ["contact"] }];

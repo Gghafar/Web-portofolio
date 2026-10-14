@@ -245,11 +245,12 @@
 @layer components {
   .desk{position:relative;width:100%;height:100dvh;min-height:560px;overflow:hidden;background:var(--desk);color:var(--desk-ink);font-family:var(--f-body)}
   .desk-bounds{position:absolute;inset:34px 0 0 0;pointer-events:none}
-  .portrait{position:absolute;left:50%;top:52%;width:min(760px,120vw);transform:translate(-50%,-50%);filter:blur(22px);pointer-events:none}
+  /* own layer, so the big blur is rasterised once instead of on every window move */
+  .portrait{position:absolute;left:50%;top:52%;width:min(760px,120vw);transform:translate(-50%,-50%);filter:blur(22px);pointer-events:none;will-change:transform}
 
   /* menu bar */
   .menubar{position:absolute;inset:0 0 auto 0;z-index:900;height:34px;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:0 12px;
-    background:rgba(250,250,248,.62);border-bottom:1px solid rgba(0,0,0,.06);-webkit-backdrop-filter:blur(20px) saturate(1.4);backdrop-filter:blur(20px) saturate(1.4);font-size:13px}
+    background:transparent;font-size:13px}
   .menubar-left{display:flex;align-items:center;gap:2px;min-width:0;flex:1 1 auto}
   .menubar-right{display:flex;align-items:center;gap:12px;flex-shrink:0;padding-right:4px}
   .mb{appearance:none;border:0;background:none;height:28px;padding:0 10px;display:inline-flex;align-items:center;border-radius:5px;color:var(--desk-ink);font:inherit;font-size:13px;cursor:pointer;white-space:nowrap}
@@ -327,6 +328,51 @@
   .dv .steps{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
   .dv .steps-item{display:flex;align-items:center;gap:8px}
 
+  /* documentation photos: square thumbnails, then a full-screen viewer */
+  .album{display:flex;flex-direction:column;gap:10px;margin-top:6px}
+  .album-head{margin:0;display:flex;align-items:baseline;justify-content:space-between;gap:12px;font:600 15px var(--f-body)}
+  .album-head a{text-decoration:none}
+  .album-head a:hover{text-decoration:underline}
+  .photos{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px}
+  .photo-btn{position:relative;display:block;width:100%;aspect-ratio:1;padding:0;border:0;border-radius:8px;overflow:hidden;background:#E9E9E5;cursor:zoom-in}
+  .photo-btn img{object-fit:cover;transition:transform .35s ease}
+  .photo-btn:hover img{transform:scale(1.05)}
+  .photo-btn:focus-visible{outline:2px solid var(--desk-ink);outline-offset:2px}
+
+  /* About: life outside campus, a paragraph per hobby with its photos under it */
+  .about-life{display:flex;flex-direction:column;gap:18px}
+  .about-life p{margin:0;font-size:16px;line-height:1.55;color:#222220}
+  .life{display:flex;flex-direction:column;gap:10px}
+  .life-photos{margin:0;display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px}
+  .life-photos img{display:block;height:260px;width:auto;border-radius:8px;background:#E9E9E5}
+  .life-photos figcaption{flex-basis:100%}
+  /* two portrait photos still fit side by side on a phone */
+  @media (max-width:760px){.life-photos img{height:180px}}
+
+  .lb-overlay{position:fixed;inset:0;z-index:2000;background:rgba(12,12,11,.86);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);animation:lb-fade .2s ease}
+  .lb{position:fixed;inset:0;z-index:2001;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:12px;padding:14px 16px 18px;color:#F5F5F2;outline:none;animation:lb-fade .2s ease}
+  .lb-bar{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .lb-title{margin:0;font:500 12px var(--f-mono);letter-spacing:.06em;text-transform:uppercase}
+  .lb-stage{position:relative;min-height:0;margin-inline:52px}
+  .lb-stage img{object-fit:contain}
+  .lb-cap{margin:0;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;font-size:15px}
+  .lb-cap span{font:400 12px var(--f-mono);color:#B5B5B0}
+  .lb-btn{appearance:none;width:44px;height:44px;display:grid;place-items:center;padding:0;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.1);color:inherit;cursor:pointer}
+  .lb-btn:hover{background:rgba(255,255,255,.2)}
+  .lb-btn:focus-visible{outline:2px solid #fff;outline-offset:2px}
+  .lb-prev,.lb-next{position:absolute;top:50%;translate:0 -50%}
+  .lb-prev{left:12px}
+  .lb-next{right:12px}
+  @keyframes lb-fade{from{opacity:0}}
+  @media (prefers-reduced-motion:reduce){.lb,.lb-overlay{animation:none}.photo-btn img{transition:none}}
+  @media (max-width:760px){
+    .photos{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+    .lb-stage{margin-inline:0}
+    .lb-prev,.lb-next{top:auto;bottom:18px;translate:none}
+    /* the arrows sit beside the caption on phones */
+    .lb-cap{min-height:44px;justify-content:center;padding-inline:56px}
+  }
+
   /* Finder-style folder list */
   .finder{list-style:none;margin:0;padding:0;border:1px solid #E6E6E1;border-radius:8px;overflow:hidden}
   .finder li+li{border-top:1px solid #EEEEEA}
@@ -353,6 +399,14 @@
     background:linear-gradient(180deg,rgba(255,255,255,.34) 0%,rgba(255,255,255,.08) 45%,rgba(255,255,255,0) 55%)}
   .dock-art{position:relative;z-index:1;display:grid;place-items:center;width:100%;height:100%}
   .dock-btn:focus-visible{outline:2px solid var(--desk-ink);outline-offset:3px}
+  /* genie (lib/desktop/genie.ts): bands of a window flowing into the dock, just under it */
+  .genie{position:fixed;inset:0;z-index:790;pointer-events:none}
+  .genie-band{position:absolute;left:0;top:0;overflow:hidden;transform-origin:0 0;will-change:transform;contain:strict}
+  /* the clones only have to look right for half a second: drop everything that costs per frame */
+  .genie-band *{animation:none!important;transition:none!important}
+  .genie-band .mac-win{box-shadow:none}
+  /* the dock's refraction would re-render under every frame of the effect */
+  html[data-genie] .dock .lg-refract{display:none}
   .dock-dot{width:4px;height:4px;border-radius:50%;background:transparent}
   .dock-dot[data-on]{background:rgba(255,255,255,.95);box-shadow:0 0 0 .5px rgba(0,0,0,.35)}
   .dock-sep{align-self:center;width:1px;height:36px;background:rgba(255,255,255,.5);box-shadow:1px 0 0 rgba(0,0,0,.12);flex-shrink:0}
@@ -370,7 +424,8 @@
     .ic{width:104px}
     .desk-hint{display:none}
     .mb-hide{display:none}
-    .menubar{position:fixed}
+    /* icons scroll under the fixed bar on phones, so keep a frosted backing there */
+    .menubar{position:fixed;background:rgba(250,250,248,.62);-webkit-backdrop-filter:blur(20px) saturate(1.4);backdrop-filter:blur(20px) saturate(1.4)}
     /* full width, from under the menu bar down to just above the dock */
     .mac-win{position:fixed;left:0;top:34px;width:100%;height:calc(100dvh - 34px - 82px);max-height:none;border-radius:0 0 14px 14px;border-inline:0}
     .mac-titlebar{cursor:default}
@@ -410,4 +465,9 @@
     --lg-border:rgba(255,255,255,.42);
     --lg-shadow:inset 0 1px 0 rgba(255,255,255,.7),inset 0 -1px 0 rgba(255,255,255,.16),inset 1px 0 0 rgba(255,255,255,.2),inset -1px 0 0 rgba(255,255,255,.2),0 12px 32px rgba(0,0,0,.2),0 1px 3px rgba(0,0,0,.1)}
   .dock.lg::after{display:none}
+
+  /* inside a white window the glass has nothing to bend or blur, but it would still be re-rendered on
+     every frame of a window's open, drag or genie animation: keep the look, drop the backdrop work */
+  .mac-win .lg-refract{display:none}
+  .mac-win .lg-frost{-webkit-backdrop-filter:none;backdrop-filter:none}
 }

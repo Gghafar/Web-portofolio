@@ -1,6 +1,8 @@
 "use client";
 
 import { AboutView, ContactView, DetailView, FolderView, ToolkitView, type Detail } from "@/components/desktop/views";
+import { AlbumSection, PhotosView } from "@/components/desktop/Gallery";
+import { Hobbies } from "@/components/desktop/Hobbies";
 import MtlaDemo from "@/components/MtlaDemo";
 import PathfindingArena from "@/components/PathfindingArena";
 import NetworkSection from "@/components/NetworkSection";
@@ -9,6 +11,7 @@ import { profile } from "@/data/profile";
 import { dfk, shooter } from "@/data/projects";
 import { JOBS, MAJOR_ORGS, MINOR_ORGS } from "@/data/experience";
 import { CERTS } from "@/data/skills";
+import { albumFor } from "@/data/gallery";
 import type { Org } from "@/lib/types";
 
 export type Group = "Apps" | "Folders" | "Projects" | "Experience" | "Organizations" | "Certificates" | "Other";
@@ -64,7 +67,11 @@ const detail = (id: string, name: string, file: string, d: () => Detail, group: 
   file,
   width,
   group,
-  render: () => <DetailView {...d()} />,
+  render: () => {
+    // Windows with an album in data/gallery.ts get their photos at the bottom.
+    const album = albumFor(id);
+    return <DetailView {...d()}>{album && <AlbumSection album={album} />}</DetailView>;
+  },
 });
 
 const app = (id: string, name: string, file: string, width: number, render: () => React.ReactNode, group: Group = "Apps"): AppDef => ({
@@ -141,6 +148,7 @@ const LIST: AppDef[] = [
       <Gantt />
     </div>
   )),
+  app("photos", "Photos", "photos.app", 720, () => <PhotosView />),
 
   // ── Projects ──
   detail("dfk", "DFK Classifier", "dfk_classifier", () => ({
@@ -242,7 +250,11 @@ const LIST: AppDef[] = [
   }), "Certificates", 520),
 
   // ── Other files ──
-  app("about", "About", "about.txt", 600, () => <AboutView />, "Other"),
+  app("about", "About", "about.txt", 600, () => (
+    <AboutView>
+      <Hobbies />
+    </AboutView>
+  ), "Other"),
   app("toolkit", "Toolkit", "toolkit", 640, () => <ToolkitView />, "Other"),
   app("contact", "Contact", "say_hello", 560, () => <ContactView />, "Other"),
   detail("cv", "CV", "cv", () => ({
@@ -274,6 +286,19 @@ const LIST: AppDef[] = [
     tags: ["LinkedIn"],
     url: { href: profile.linkedin, label: "Open LinkedIn profile" },
   }), "Other", 520),
+  // Only once there is a username to link to (data/profile.ts).
+  ...(profile.instagramUser
+    ? [
+        detail("instagram", "Instagram", "apps/instagram", () => ({
+          kicker: "App · Instagram",
+          title: `@${profile.instagramUser}`,
+          meta: `instagram.com/${profile.instagramUser}`,
+          body: <p>Life outside campus and work: running, hiking, and time with friends.</p>,
+          tags: ["Instagram"],
+          url: { href: `https://www.instagram.com/${profile.instagramUser}/`, label: "Open Instagram profile" },
+        }), "Other", 520),
+      ]
+    : []),
 ];
 
 export const APPS: Record<string, AppDef> = Object.fromEntries(LIST.map((a) => [a.id, a]));

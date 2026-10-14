@@ -13,6 +13,8 @@ export const profile = {
   githubUser: "Gghafar",
   linkedin: "https://www.linkedin.com/in/gandrungghafar06/",
   linkedinLabel: "linkedin.com/in/gandrungghafar06",
+  /** Instagram username without "@". Empty = the Instagram app stays out of the dock and Spotlight. */
+  instagramUser: "",
   /** Education (school, GPA, semesters) is shown separately from data/skills.ts. */
   facts: [
     { term: "Latest role", detail: "IT Developer, PT PELNI (Persero) · Jul – Aug 2026" },
