@@ -1,6 +1,7 @@
 "use client";
 
 import { AboutView, ContactView, DetailView, FolderView, ToolkitView, type Detail } from "@/components/desktop/views";
+import { AlbumSection, PhotosView } from "@/components/desktop/Gallery";
 import MtlaDemo from "@/components/MtlaDemo";
 import PathfindingArena from "@/components/PathfindingArena";
 import NetworkSection from "@/components/NetworkSection";
@@ -9,6 +10,7 @@ import { profile } from "@/data/profile";
 import { dfk, shooter } from "@/data/projects";
 import { JOBS, MAJOR_ORGS, MINOR_ORGS } from "@/data/experience";
 import { CERTS } from "@/data/skills";
+import { albumFor } from "@/data/gallery";
 import type { Org } from "@/lib/types";
 
 export type Group = "Apps" | "Folders" | "Projects" | "Experience" | "Organizations" | "Certificates" | "Other";
@@ -64,7 +66,11 @@ const detail = (id: string, name: string, file: string, d: () => Detail, group: 
   file,
   width,
   group,
-  render: () => <DetailView {...d()} />,
+  render: () => {
+    // Windows with an album in data/gallery.ts get their photos at the bottom.
+    const album = albumFor(id);
+    return <DetailView {...d()}>{album && <AlbumSection album={album} />}</DetailView>;
+  },
 });
 
 const app = (id: string, name: string, file: string, width: number, render: () => React.ReactNode, group: Group = "Apps"): AppDef => ({
@@ -141,6 +147,7 @@ const LIST: AppDef[] = [
       <Gantt />
     </div>
   )),
+  app("photos", "Photos", "photos.app", 720, () => <PhotosView />),
 
   // ── Projects ──
   detail("dfk", "DFK Classifier", "dfk_classifier", () => ({

@@ -50,6 +50,7 @@ export const DOCK_MAIN: DockItemDef[] = [
   { app: "experience", label: "Experience", running: ["experience"] },
   { app: "organizations", label: "Organizations", running: ["organizations"] },
   { app: "certificates", label: "Certificates", running: ["certificates"] },
+  { app: "photos", label: "Photos", running: ["photos"] },
 ];
 
 export const DOCK_LINKS: DockItemDef[] = [

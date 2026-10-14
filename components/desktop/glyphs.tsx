@@ -222,6 +222,16 @@ export const TILES: Record<string, Tile> = {
       </>
     ),
   },
+  photos: {
+    bg: "#0F766E",
+    art: (
+      <>
+        <rect x="8" y="10" width="28" height="24" fill="none" stroke="#ffffff" strokeWidth="2" />
+        <circle cx="29" cy="17" r="2.5" fill="#FFD166" />
+        <path d="M10 32 L19 21 L25 28 L28 25 L34 32 Z" fill="#ffffff" />
+      </>
+    ),
+  },
   cv: {
     bg: "#ffffff",
     art: (
@@ -296,6 +306,17 @@ export const DOCK_GLYPHS: Record<string, DockGlyph> = {
       <>
         <circle cx="12" cy="9" r="6" />
         <path d="M8.5 14 7 22l5-3 5 3-1.5-8" />
+      </>
+    ),
+  },
+  photos: {
+    bg: "#0F766E",
+    fg: "#ffffff",
+    art: (
+      <>
+        <rect x="3" y="5" width="18" height="14" rx="2" />
+        <circle cx="16" cy="9.5" r="1.5" />
+        <path d="m3 16 5-5 4 4 2.5-2.5L21 18" />
       </>
     ),
   },
