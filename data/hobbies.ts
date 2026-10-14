@@ -1,12 +1,12 @@
 /**
- * "Outside campus" in the About window: who I am beyond being an ITS student.
- * `photos` are file names from the personal album (the "about" album in data/gallery.ts); the first one is the cover.
+ * Life outside campus, shown in the About window: who I am beyond being an ITS student.
+ * `photos` are file names from the personal album (the "about" album in data/gallery.ts), shown in this order.
  */
 
 export type Hobby = {
   title: string;
   text: string;
-  /** Short mono line under the text: event, place or date. */
+  /** Short mono line under the photos: event, place or date. */
   note: string;
   photos: string[];
 };

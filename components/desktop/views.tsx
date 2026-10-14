@@ -117,7 +117,7 @@ export function FolderView({ intro, items }: { intro: string; items: { to: strin
   );
 }
 
-/** `children` (the "Outside campus" hobbies) go between the education block and the actions. */
+/** `children` (life outside campus) go between the education block and the actions. */
 export function AboutView({ children }: { children?: React.ReactNode }) {
   return (
     <DetailView

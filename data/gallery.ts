@@ -6,6 +6,9 @@
 export type Photo = {
   /** File name inside the album folder. */
   file: string;
+  /** Size of the web copy in px (the thumbnail has the same shape). */
+  w: number;
+  h: number;
   /** What the photo shows (alt text and caption). */
   alt: string;
   /** "YYYY-MM-DD", from the photo itself. */
@@ -28,7 +31,7 @@ export const ALBUMS: Album[] = [
     title: "PT PELNI",
     group: "Experience",
     folder: "experience/pelni",
-    photos: [{ file: "img-9278.jpg", alt: "Standing in front of a PELNI ship", date: "2026-07-10" }],
+    photos: [{ file: "img-9278.jpg", w: 1200, h: 1600, alt: "Standing in front of a PELNI ship", date: "2026-07-10" }],
   },
   {
     id: "komdigi-ml",
@@ -36,8 +39,8 @@ export const ALBUMS: Album[] = [
     group: "Experience",
     folder: "experience/komdigi-ml",
     photos: [
-      { file: "img-8082.jpg", alt: "The team on stage at the AI Talent Factory (AITF) 2026 Demo Day & Graduation", date: "2026-06-30" },
-      { file: "img-8107.jpg", alt: "At the AITF 2026 Demo Day & Graduation", date: "2026-06-30" },
+      { file: "img-8082.jpg", w: 1200, h: 1600, alt: "The team on stage at the AI Talent Factory (AITF) 2026 Demo Day & Graduation", date: "2026-06-30" },
+      { file: "img-8107.jpg", w: 1200, h: 1600, alt: "At the AITF 2026 Demo Day & Graduation", date: "2026-06-30" },
     ],
   },
   {
@@ -45,7 +48,7 @@ export const ALBUMS: Album[] = [
     title: "Komdigi — IT Intern",
     group: "Experience",
     folder: "experience/komdigi-it",
-    photos: [{ file: "img-5197.jpg", alt: "At the Komdigi office, next to the ministry logo", date: "2026-02-26" }],
+    photos: [{ file: "img-5197.jpg", w: 1200, h: 1600, alt: "At the Komdigi office, next to the ministry logo", date: "2026-02-26" }],
   },
   {
     id: "elite",
@@ -53,9 +56,9 @@ export const ALBUMS: Album[] = [
     group: "Organizations",
     folder: "organizations/elite",
     photos: [
-      { file: "img-3952.jpg", alt: "Elite x Pesraf crew in the EXP team jerseys", date: "2025-06-01" },
-      { file: "img-2045.jpg", alt: "With the operations team at the venue", date: "2025-09-13" },
-      { file: "img-6256.jpg", alt: "The full Elite x Pesraf committee", date: "2025-09-13" },
+      { file: "img-3952.jpg", w: 1200, h: 1600, alt: "Elite x Pesraf crew in the EXP team jerseys", date: "2025-06-01" },
+      { file: "img-2045.jpg", w: 1200, h: 1600, alt: "With the operations team at the venue", date: "2025-09-13" },
+      { file: "img-6256.jpg", w: 1200, h: 1600, alt: "The full Elite x Pesraf committee", date: "2025-09-13" },
     ],
   },
   {
@@ -63,7 +66,7 @@ export const ALBUMS: Album[] = [
     title: "IDEAS 2025",
     group: "Organizations",
     folder: "organizations/ideas",
-    photos: [{ file: "img-2937.jpg", alt: "At the Electics & Medics booth (FTEIC × FKK)", date: "2025-01-25" }],
+    photos: [{ file: "img-2937.jpg", w: 1200, h: 1600, alt: "At the Electics & Medics booth (FTEIC × FKK)", date: "2025-01-25" }],
   },
   {
     id: "inclenation",
@@ -71,9 +74,9 @@ export const ALBUMS: Album[] = [
     group: "Organizations",
     folder: "organizations/inclenation",
     photos: [
-      { file: "img-0272.jpg", alt: "Mentor group holding up their team boards", date: "2024-08-07" },
-      { file: "img-0337.jpg", alt: "Group photo with the mentees", date: "2024-08-08" },
-      { file: "img-0469.jpg", alt: "With a fellow mentor in the Inclenation 2024 shirt", date: "2024-08-13" },
+      { file: "img-0272.jpg", w: 1200, h: 1600, alt: "Mentor group holding up their team boards", date: "2024-08-07" },
+      { file: "img-0337.jpg", w: 1200, h: 1600, alt: "Group photo with the mentees", date: "2024-08-08" },
+      { file: "img-0469.jpg", w: 1200, h: 1600, alt: "With a fellow mentor in the Inclenation 2024 shirt", date: "2024-08-13" },
     ],
   },
   {
@@ -82,12 +85,12 @@ export const ALBUMS: Album[] = [
     group: "Personal",
     folder: "personal",
     photos: [
-      { file: "img-1460.jpg", alt: "Bank Jatim JConnect Run Soeraraja, 10K, bib 3636", date: "2025-09-26" },
-      { file: "img-5191.jpg", alt: "With friends at a hydropower plant", date: "2025-10-30" },
-      { file: "img-9905.jpg", alt: "Tennis with friends", date: "2026-04-25" },
-      { file: "img-7273.jpg", alt: "On the trail to the Mt. Butak summit", date: "2026-05-03" },
-      { file: "img-7521.jpg", alt: "The hiking group at the Mt. Butak summit sign", date: "2026-05-03" },
-      { file: "img-0848.jpg", alt: "With friends after a game on the court", date: "2026-06-14" },
+      { file: "img-1460.jpg", w: 1200, h: 1600, alt: "Bank Jatim JConnect Run Soeraraja, 10K, bib 3636", date: "2025-09-26" },
+      { file: "img-5191.jpg", w: 1200, h: 1600, alt: "With friends at a hydropower plant", date: "2025-10-30" },
+      { file: "img-9905.jpg", w: 1200, h: 1600, alt: "Tennis with friends", date: "2026-04-25" },
+      { file: "img-7273.jpg", w: 1200, h: 1600, alt: "On the trail to the Mt. Butak summit", date: "2026-05-03" },
+      { file: "img-7521.jpg", w: 1200, h: 1600, alt: "The hiking group at the Mt. Butak summit sign", date: "2026-05-03" },
+      { file: "img-0848.jpg", w: 900, h: 1600, alt: "With friends after a game on the court", date: "2026-06-14" },
     ],
   },
 ];
