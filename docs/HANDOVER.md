@@ -1,7 +1,7 @@
 # Handover — Web-portofolio (Portfolio Desktop)
 
 Ringkasan kondisi project untuk siapa pun (atau sesi AI berikutnya) yang melanjutkan pekerjaan ini.
-Terakhir diperbarui: 14 Oktober 2026, bersama PR `feat/macos-desktop`.
+Terakhir diperbarui: 15 Oktober 2026 (setelah PR #10 `feat/macos-desktop` di-merge ke `main`).
 
 ---
 
@@ -109,6 +109,10 @@ border/inset shadow (rim). Atur rasa lewat variabel `--lg-tint-top`, `--lg-tint-
 - PR **di-merge oleh pemilik**. Commit/PR **tanpa** baris co-author/atribusi AI.
 - CI (`ci.yml`: lint, typecheck, build) dan Docker (`docker.yml`: hadolint, build, smoke test, push GHCR setelah merge)
   harus hijau. Panduan: `docs/CI-CD.md`, `docs/DOCKER.md`.
+- `deploy.yml` adalah CD versi GitHub Actions — **OFF secara default** (butuh secret Vercel + variabel
+  `DEPLOY_WITH_ACTIONS`). Produksi tetap lewat Vercel Git integration; lihat "Mode B" di `docs/CI-CD.md`.
+- Branch yang sudah di-merge (mis. `feat/macos-desktop`) jangan dipakai lagi — mulai pekerjaan baru dari `main`
+  terbaru.
 
 ## 7. Riwayat singkat
 
@@ -119,7 +123,7 @@ border/inset shadow (rim). Atur rasa lewat variabel `--lg-tint-top`, `--lg-tint-
 | #3 | Fix layer skill network graph hilang (`hidden`/`container` vs Tailwind) |
 | #4 | Docker: Dockerfile multi-stage + Nginx, compose, workflow Docker + GHCR |
 | #5 | Transisi tema "ombak", smooth scroll (Lenis), fix topbar — **sudah dihapus lagi** di PR desktop |
-| *(PR ini)* | Tampilan macOS desktop + liquid glass, menggantikan halaman scroll lama |
+| #10 | Tampilan macOS desktop + liquid glass, menggantikan halaman scroll lama |
 
 ## 8. Pekerjaan terbuka
 
@@ -135,3 +139,5 @@ border/inset shadow (rim). Atur rasa lewat variabel `--lg-tint-top`, `--lg-tint-
   - paragraf "About" versi pemilik sendiri (sekarang memakai `profile.lede`).
 - Opsional: `next-env.d.ts` dibuat ulang otomatis oleh Next dan selalu tampil "modified" — bisa dimasukkan ke
   `.gitignore` dan dikeluarkan dari git.
+- Opsional: trigger `pull_request` di `deploy.yml` masih menyebut branch `feature` yang sudah dihapus — bisa
+  dibuang dari daftar `branches`.
