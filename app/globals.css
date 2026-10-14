@@ -245,7 +245,8 @@
 @layer components {
   .desk{position:relative;width:100%;height:100dvh;min-height:560px;overflow:hidden;background:var(--desk);color:var(--desk-ink);font-family:var(--f-body)}
   .desk-bounds{position:absolute;inset:34px 0 0 0;pointer-events:none}
-  .portrait{position:absolute;left:50%;top:52%;width:min(760px,120vw);transform:translate(-50%,-50%);filter:blur(22px);pointer-events:none}
+  /* own layer, so the big blur is rasterised once instead of on every window move */
+  .portrait{position:absolute;left:50%;top:52%;width:min(760px,120vw);transform:translate(-50%,-50%);filter:blur(22px);pointer-events:none;will-change:transform}
 
   /* menu bar */
   .menubar{position:absolute;inset:0 0 auto 0;z-index:900;height:34px;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:0 12px;
@@ -400,7 +401,12 @@
   .dock-btn:focus-visible{outline:2px solid var(--desk-ink);outline-offset:3px}
   /* genie (lib/desktop/genie.ts): bands of a window flowing into the dock, just under it */
   .genie{position:fixed;inset:0;z-index:790;pointer-events:none}
-  .genie-band{position:absolute;left:0;top:0;overflow:hidden;transform-origin:0 0;will-change:transform}
+  .genie-band{position:absolute;left:0;top:0;overflow:hidden;transform-origin:0 0;will-change:transform;contain:strict}
+  /* the clones only have to look right for half a second: drop everything that costs per frame */
+  .genie-band *{animation:none!important;transition:none!important}
+  .genie-band .mac-win{box-shadow:none}
+  /* the dock's refraction would re-render under every frame of the effect */
+  html[data-genie] .dock .lg-refract{display:none}
   .dock-dot{width:4px;height:4px;border-radius:50%;background:transparent}
   .dock-dot[data-on]{background:rgba(255,255,255,.95);box-shadow:0 0 0 .5px rgba(0,0,0,.35)}
   .dock-sep{align-self:center;width:1px;height:36px;background:rgba(255,255,255,.5);box-shadow:1px 0 0 rgba(0,0,0,.12);flex-shrink:0}
@@ -459,4 +465,9 @@
     --lg-border:rgba(255,255,255,.42);
     --lg-shadow:inset 0 1px 0 rgba(255,255,255,.7),inset 0 -1px 0 rgba(255,255,255,.16),inset 1px 0 0 rgba(255,255,255,.2),inset -1px 0 0 rgba(255,255,255,.2),0 12px 32px rgba(0,0,0,.2),0 1px 3px rgba(0,0,0,.1)}
   .dock.lg::after{display:none}
+
+  /* inside a white window the glass has nothing to bend or blur, but it would still be re-rendered on
+     every frame of a window's open, drag or genie animation: keep the look, drop the backdrop work */
+  .mac-win .lg-refract{display:none}
+  .mac-win .lg-frost{-webkit-backdrop-filter:none;backdrop-filter:none}
 }

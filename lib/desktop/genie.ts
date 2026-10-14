@@ -11,6 +11,8 @@
 export type Box = { x: number; y: number; w: number; h: number };
 
 const DURATION = 520;
+/** Effects in flight; while any runs, `<html data-genie>` switches off costly effects elsewhere. */
+let running = 0;
 
 const clamp01 = (t: number) => Math.min(1, Math.max(0, t));
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
@@ -75,7 +77,10 @@ export function genie(el: HTMLElement, target: Box, dir: "in" | "out"): Promise<
   const H = r.height;
   if (W < 1 || H < 1) return Promise.resolve();
 
-  const count = Math.min(32, Math.max(12, Math.round(H / 18)));
+  // Every band is a full clone of the window, so keep them few (fewer still for big windows like the
+  // Hiring Match graph): the trapezoid warp keeps the edges smooth anyway.
+  const nodes = el.getElementsByTagName("*").length;
+  const count = Math.max(8, Math.min(16, Math.round(H / 40), Math.round(4000 / Math.max(1, nodes))));
   const layer = document.createElement("div");
   layer.className = "genie";
   layer.setAttribute("aria-hidden", "true");
@@ -93,6 +98,8 @@ export function genie(el: HTMLElement, target: Box, dir: "in" | "out"): Promise<
     return { wrap, y0, y1 };
   });
   document.body.append(layer);
+  running++;
+  document.documentElement.dataset.genie = "";
   // Scroll positions only take once the clones are in the document.
   if (scrollFrom?.scrollTop) layer.querySelectorAll<HTMLElement>(".mac-body").forEach((b) => (b.scrollTop = scrollFrom.scrollTop));
 
@@ -139,6 +146,7 @@ export function genie(el: HTMLElement, target: Box, dir: "in" | "out"): Promise<
       if (t < 1) requestAnimationFrame(frame);
       else {
         layer.remove();
+        if (--running === 0) delete document.documentElement.dataset.genie;
         resolve();
       }
     };
