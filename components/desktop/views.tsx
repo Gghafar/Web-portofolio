@@ -117,7 +117,8 @@ export function FolderView({ intro, items }: { intro: string; items: { to: strin
   );
 }
 
-export function AboutView() {
+/** `children` (the personal photos) go between the education block and the actions. */
+export function AboutView({ children }: { children?: React.ReactNode }) {
   return (
     <DetailView
       kicker="About"
@@ -145,6 +146,7 @@ export function AboutView() {
         </div>
         <SemesterTrack />
       </div>
+      {children}
       <div className="dv-actions">
         <span id="about-email" className="sr-only">
           {profile.email}

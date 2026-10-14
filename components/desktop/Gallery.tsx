@@ -90,12 +90,12 @@ export function PhotoGrid({ album }: { album: Album }) {
   );
 }
 
-/** The "Documentation" block at the bottom of an experience or organization window. */
-export function AlbumSection({ album }: { album: Album }) {
+/** The photo block in a window: "Documentation" for experience and organizations, the personal album in About. */
+export function AlbumSection({ album, title = "Documentation" }: { album: Album; title?: string }) {
   return (
     <section className="album">
       <h3 className="album-head">
-        <span>Documentation</span>
+        <span>{title}</span>
         <OpenLink to="photos" className="dv-note">
           All photos →
         </OpenLink>
@@ -115,11 +115,7 @@ export function PhotosView() {
       {ALBUMS.map((a) => (
         <section key={a.id} className="album">
           <h3 className="album-head">
-            {a.group === "Personal" ? (
-              <span>{a.title}</span>
-            ) : (
-              <OpenLink to={a.id}>{a.title}</OpenLink>
-            )}
+            <OpenLink to={a.id}>{a.title}</OpenLink>
             <span className="dv-note">
               {a.group} · {a.photos.length} {a.photos.length === 1 ? "photo" : "photos"}
             </span>

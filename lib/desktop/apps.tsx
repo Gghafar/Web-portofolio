@@ -249,7 +249,10 @@ const LIST: AppDef[] = [
   }), "Certificates", 520),
 
   // ── Other files ──
-  app("about", "About", "about.txt", 600, () => <AboutView />, "Other"),
+  app("about", "About", "about.txt", 600, () => {
+    const album = albumFor("about");
+    return <AboutView>{album && <AlbumSection album={album} title="Outside work" />}</AboutView>;
+  }, "Other"),
   app("toolkit", "Toolkit", "toolkit", 640, () => <ToolkitView />, "Other"),
   app("contact", "Contact", "say_hello", 560, () => <ContactView />, "Other"),
   detail("cv", "CV", "cv", () => ({

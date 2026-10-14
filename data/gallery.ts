@@ -77,7 +77,7 @@ export const ALBUMS: Album[] = [
     ],
   },
   {
-    id: "personal",
+    id: "about",
     title: "Personal",
     group: "Personal",
     folder: "personal",
