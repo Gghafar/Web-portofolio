@@ -33,7 +33,7 @@ export default function Gantt() {
   const years = TIMELINE_YEARS.map((y) => ({ y, left: pct(new Date(y, 0, 1)).toFixed(2) + "%" }));
 
   return (
-    <div className="gantt" data-spotlight>
+    <div className="gantt">
       <div className="g-top">
         <p className="g-readout">{readout}</p>
         <ul className="legend">

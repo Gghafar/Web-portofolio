@@ -2,7 +2,7 @@ import type { Job, Org, TimelineRow } from "@/lib/types";
 
 export const JOBS: Job[] = [
   {
-    id: "job-pelni",
+    id: "pelni",
     company: "PT PELNI (Persero)",
     where: "IT Developer",
     when: "Jul – Aug 2026",
@@ -39,7 +39,7 @@ export const JOBS: Job[] = [
 /** Shown two per row. */
 export const MAJOR_ORGS: Org[] = [
   {
-    id: "exp-npc",
+    id: "schematics",
     name: "Schematics National Programming Contest",
     where: "Schematics ITS · Technical Division · Surabaya",
     steps: [
@@ -54,7 +54,7 @@ export const MAJOR_ORGS: Org[] = [
     ],
   },
   {
-    id: "exp-elx",
+    id: "elite",
     name: "Elite x Pesraf",
     where: "BEM FTEIC ITS · Faculty annual event · Surabaya",
     steps: [
@@ -72,7 +72,7 @@ export const MAJOR_ORGS: Org[] = [
 /** Shown three per row. */
 export const MINOR_ORGS: Org[] = [
   {
-    id: "exp-ideas",
+    id: "ideas",
     name: "IDEAS 2025",
     where: "Integrated Dreams and Realities · Patriot ITS Bekasi",
     steps: [{ title: "Staff of Event", when: "Dec 2024 – Jan 2025" }],
@@ -82,7 +82,7 @@ export const MINOR_ORGS: Org[] = [
     ],
   },
   {
-    id: "exp-incl",
+    id: "inclenation",
     name: "Inclenation 2024",
     where: "BEM FTEIC ITS · Faculty orientation · Surabaya",
     steps: [{ title: "Staff of Mentor", when: "Jul – Aug 2024" }],
@@ -92,7 +92,7 @@ export const MINOR_ORGS: Org[] = [
     ],
   },
   {
-    id: "exp-pj",
+    id: "pasar",
     name: "Dies Natalis Pasar Juang",
     where: "ITS anniversary cultural market · Surabaya",
     steps: [{ title: "Staff, Logistics & General Affairs", when: "Oct – Nov 2023" }],
@@ -106,15 +106,15 @@ export const TIMELINE_END = { year: 2027, month: 10 };
 export const TIMELINE_YEARS = [2024, 2025, 2026, 2027];
 
 export const TIMELINE: TimelineRow[] = [
-  { label: "B.Eng. AI, ITS", anchor: "#skills", segs: [{ s: "2023-08", e: "now", k: "edu", t: "Degree, in progress" }, { s: "now", e: "2027-09", k: "edu-next", t: "Degree, expected to finish Sep 2027" }] },
-  { label: "Pasar Juang", anchor: "#exp-pj", segs: [{ s: "2023-10", e: "2023-11", k: "staff", t: "Logistics & General Affairs Staff" }] },
-  { label: "Schematics NPC", anchor: "#exp-npc", segs: [{ s: "2024-03", e: "2024-10", k: "staff", t: "Technical Staff" }, { s: "2025-02", e: "2025-11", k: "expert", t: "Expert Staff" }] },
-  { label: "Inclenation 2024", anchor: "#exp-incl", segs: [{ s: "2024-07", e: "2024-08", k: "staff", t: "Staff of Mentor" }] },
-  { label: "Elite x Pesraf", anchor: "#exp-elx", segs: [{ s: "2024-10", e: "2024-12", k: "staff", t: "Staff of Event" }, { s: "2025-05", e: "2025-09", k: "expert", t: "Expert Staff of Operational" }] },
-  { label: "IDEAS 2025", anchor: "#exp-ideas", segs: [{ s: "2024-12", e: "2025-01", k: "staff", t: "Staff of Event" }] },
-  { label: "Top-Down Shooter", anchor: "#work-shooter", segs: [{ s: "2025-12", e: "2025-12", k: "project", t: "Gameplay & AI Programmer" }] },
-  { label: "Komdigi · IT Intern", anchor: "#job-komdigi", segs: [{ s: "2026-01", e: "2026-04", k: "job", t: "IT Intern" }] },
-  { label: "Komdigi · ML Eng.", anchor: "#job-komdigi", segs: [{ s: "2026-02", e: "2026-07", k: "job", t: "Machine Learning Engineer" }] },
-  { label: "DFK Classifier", anchor: "#work-dfk", segs: [{ s: "2026-05", e: "2026-06", k: "project", t: "AI/ML Engineer" }] },
-  { label: "PT PELNI", anchor: "#job-pelni", segs: [{ s: "2026-07", e: "2026-08", k: "job", t: "IT Developer" }] },
+  { label: "B.Eng. AI, ITS", anchor: "#about", segs: [{ s: "2023-08", e: "now", k: "edu", t: "Degree, in progress" }, { s: "now", e: "2027-09", k: "edu-next", t: "Degree, expected to finish Sep 2027" }] },
+  { label: "Pasar Juang", anchor: "#pasar", segs: [{ s: "2023-10", e: "2023-11", k: "staff", t: "Logistics & General Affairs Staff" }] },
+  { label: "Schematics NPC", anchor: "#schematics", segs: [{ s: "2024-03", e: "2024-10", k: "staff", t: "Technical Staff" }, { s: "2025-02", e: "2025-11", k: "expert", t: "Expert Staff" }] },
+  { label: "Inclenation 2024", anchor: "#inclenation", segs: [{ s: "2024-07", e: "2024-08", k: "staff", t: "Staff of Mentor" }] },
+  { label: "Elite x Pesraf", anchor: "#elite", segs: [{ s: "2024-10", e: "2024-12", k: "staff", t: "Staff of Event" }, { s: "2025-05", e: "2025-09", k: "expert", t: "Expert Staff of Operational" }] },
+  { label: "IDEAS 2025", anchor: "#ideas", segs: [{ s: "2024-12", e: "2025-01", k: "staff", t: "Staff of Event" }] },
+  { label: "Top-Down Shooter", anchor: "#shooter", segs: [{ s: "2025-12", e: "2025-12", k: "project", t: "Gameplay & AI Programmer" }] },
+  { label: "Komdigi · IT Intern", anchor: "#komdigi-it", segs: [{ s: "2026-01", e: "2026-04", k: "job", t: "IT Intern" }] },
+  { label: "Komdigi · ML Eng.", anchor: "#komdigi-ml", segs: [{ s: "2026-02", e: "2026-07", k: "job", t: "Machine Learning Engineer" }] },
+  { label: "DFK Classifier", anchor: "#dfk", segs: [{ s: "2026-05", e: "2026-06", k: "project", t: "AI/ML Engineer" }] },
+  { label: "PT PELNI", anchor: "#pelni", segs: [{ s: "2026-07", e: "2026-08", k: "job", t: "IT Developer" }] },
 ];

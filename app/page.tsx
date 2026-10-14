@@ -1,25 +1,21 @@
-import Topbar from "@/components/Topbar";
-import Hero from "@/components/Hero";
-import NetworkSection from "@/components/NetworkSection";
-import Projects from "@/components/Projects";
-import Experience from "@/components/Experience";
-import Skills from "@/components/Skills";
-import Contact from "@/components/Contact";
-import Footer from "@/components/Footer";
+import Desktop from "@/components/desktop/Desktop";
+import { profile } from "@/data/profile";
 
 export default function Home() {
   return (
-    <>
-      <Topbar />
-      <main className="container">
-        <Hero />
-        <NetworkSection />
-        <Projects />
-        <Experience />
-        <Skills />
-        <Contact />
-      </main>
-      <Footer />
-    </>
+    <main>
+      {/* The desktop is visual; this summary is what search engines and screen readers read first. */}
+      <div className="sr-only">
+        <h1>{profile.name}</h1>
+        <p>
+          {profile.role}. {profile.lede}
+        </p>
+        <p>
+          Contact: <a href={`mailto:${profile.email}`}>{profile.email}</a> · <a href={profile.linkedin}>LinkedIn</a> ·{" "}
+          <a href={profile.github}>GitHub</a>
+        </p>
+      </div>
+      <Desktop />
+    </main>
   );
 }

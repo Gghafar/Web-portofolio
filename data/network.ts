@@ -30,37 +30,37 @@ export const SKILLS: Skill[] = [
   { id: "s_mentor", label: "Mentoring & outreach", desc: "Guiding freshmen and prospective students." },
 ];
 
-/** Evidence layer: work that proves the skills. `anchor` links to the full entry on the page. */
+/** Evidence layer: work that proves the skills. `anchor` opens its window on the desktop. */
 export const EVIDENCE: Evidence[] = [
-  { id: "e_kml", kind: "job", label: "Komdigi · ML Engineer", role: "Machine Learning Engineer, Ministry of Communication and Digital Affairs", date: "Feb – Jul 2026", anchor: "#job-komdigi", points: [
+  { id: "e_kml", kind: "job", label: "Komdigi · ML Engineer", role: "Machine Learning Engineer, Ministry of Communication and Digital Affairs", date: "Feb – Jul 2026", anchor: "#komdigi-ml", points: [
     "Designed a fine-tuning approach that combines continual pre-training (CPT) and supervised fine-tuning (SFT) with PEFT and 4-bit quantization.",
     "Tracked experiments in Weights & Biases: real-time training metrics, loss convergence, and documented results for the team."] },
-  { id: "e_dfk", kind: "project", label: "DFK Text Classifier", role: "AI/ML Engineer", date: "May – Jun 2026", anchor: "#work-dfk", points: [
+  { id: "e_dfk", kind: "project", label: "DFK Text Classifier", role: "AI/ML Engineer", date: "May – Jun 2026", anchor: "#dfk", points: [
     "Deployed a fine-tuned 8B-parameter LLM as a GPU-backed FastAPI endpoint on Modal (NVIDIA H100).",
     "Built multi-trial logit-averaging (MTLA) voting to cut single-pass hallucination.",
     "Traced every request with W&B Weave: inputs, outputs, latency, and token counts."] },
-  { id: "e_kit", kind: "job", label: "Komdigi · IT Intern", role: "IT Intern, Ministry of Communication and Digital Affairs", date: "Jan – Apr 2026", anchor: "#job-komdigi", points: [
+  { id: "e_kit", kind: "job", label: "Komdigi · IT Intern", role: "IT Intern, Ministry of Communication and Digital Affairs", date: "Jan – Apr 2026", anchor: "#komdigi-it", points: [
     "Managed mission-critical government domain infrastructure with DNSSEC validation and SSL/TLS encryption.",
     "Led the design of the Government Domain Compliance Index (GDCI), an AI-driven engine that scores domain governance maturity across government institutions."] },
-  { id: "e_npc", kind: "role", label: "Schematics NPC", role: "Schematics ITS, Technical Division, Staff → Expert Staff", date: "Mar 2024 – Nov 2025", anchor: "#exp-npc", points: [
+  { id: "e_npc", kind: "role", label: "Schematics NPC", role: "Schematics ITS, Technical Division, Staff → Expert Staff", date: "Mar 2024 – Nov 2025", anchor: "#schematics", points: [
     "Architected and maintained the servers and online judge for a national programming contest.",
     "Validated the systems before every contest window for zero downtime.",
     "Promoted from Staff (2024) to Expert Staff (2025)."] },
-  { id: "e_shooter", kind: "project", label: "Top-Down Shooter", role: "Gameplay & AI Programmer, team of 3", date: "Dec 2025", anchor: "#work-shooter", points: [
+  { id: "e_shooter", kind: "project", label: "Top-Down Shooter", role: "Gameplay & AI Programmer, team of 3", date: "Dec 2025", anchor: "#shooter", points: [
     "Programmed zombie pathfinding with Unity NavMesh Agents.",
     "Built Raycast shooting with LineRenderer bullet tracers.",
     "Designed the enemy FSM and a wave spawner that scales difficulty."] },
-  { id: "e_elx", kind: "role", label: "Elite x Pesraf", role: "BEM FTEIC ITS, Staff of Event → Expert Staff of Operational", date: "Oct 2024 – Sep 2025", anchor: "#exp-elx", points: [
+  { id: "e_elx", kind: "role", label: "Elite x Pesraf", role: "BEM FTEIC ITS, Staff of Event → Expert Staff of Operational", date: "Oct 2024 – Sep 2025", anchor: "#elite", points: [
     "Ran operations for a faculty event that pairs a sports competition (ELITE) with an arts exhibition (PESRAF).",
     "Coordinated match schedules, officiating support, and venues.",
     "Promoted from Staff of Event (2024) to Expert Staff of Operational (2025)."] },
-  { id: "e_ideas", kind: "role", label: "IDEAS 2025", role: "Staff of Event, Patriot ITS Bekasi", date: "Dec 2024 – Jan 2025", anchor: "#exp-ideas", points: [
+  { id: "e_ideas", kind: "role", label: "IDEAS 2025", role: "Staff of Event, Patriot ITS Bekasi", date: "Dec 2024 – Jan 2025", anchor: "#ideas", points: [
     "Ran events with INI LHO ITS Forda Bekasi to introduce ITS to senior high school students in Bekasi.",
     "Represented ITS as a student ambassador."] },
-  { id: "e_incl", kind: "role", label: "Inclenation 2024", role: "Staff of Mentor, BEM FTEIC ITS", date: "Jul – Aug 2024", anchor: "#exp-incl", points: [
+  { id: "e_incl", kind: "role", label: "Inclenation 2024", role: "Staff of Mentor, BEM FTEIC ITS", date: "Jul – Aug 2024", anchor: "#inclenation", points: [
     "Introduced the faculty and its departments to incoming freshmen.",
     "Was responsible for an assigned group of participants."] },
-  { id: "e_pj", kind: "role", label: "Pasar Juang", role: "Logistics & General Affairs Staff", date: "Oct – Nov 2023", anchor: "#exp-pj", points: [
+  { id: "e_pj", kind: "role", label: "Pasar Juang", role: "Logistics & General Affairs Staff", date: "Oct – Nov 2023", anchor: "#pasar", points: [
     "Coordinated logistics, permits, security, and consumables for a multi-day cultural exhibition."] },
 ];
 

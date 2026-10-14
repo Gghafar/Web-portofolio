@@ -2,7 +2,7 @@ import type { Project } from "@/lib/types";
 
 // Text wrapped in `backticks` renders as <code>.
 export const dfk: Project = {
-  id: "work-dfk",
+  id: "dfk",
   eyebrow: "LLM inference endpoint · May – Jun 2026 · AI/ML Engineer",
   title: "DFK Text Classifier",
   summary: "A fine-tuned 8-billion-parameter language model served as a GPU-backed API. It reads Indonesian social-media posts and sorts them into a five-label schema for disinformation, slander, and hate speech (DFK).",
@@ -20,7 +20,7 @@ export const dfk: Project = {
 };
 
 export const shooter: Project = {
-  id: "work-shooter",
+  id: "shooter",
   eyebrow: "Course final project · Dec 2025 · Gameplay & AI Programmer",
   title: "Top-Down Shooter",
   summary: "A 3D top-down zombie-survival shooter built by a team of three for the Intelligent Games (Game Cerdas) course. I wrote the core combat and enemy AI systems in C#.",

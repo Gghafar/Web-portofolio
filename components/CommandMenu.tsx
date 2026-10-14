@@ -1,10 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useLenis } from "lenis/react";
-import type Lenis from "lenis";
 import { toast } from "sonner";
-import { BriefcaseIcon, CopyIcon, ExternalLinkIcon, FolderGitIcon, HashIcon, MailIcon, MoonIcon, UsersIcon } from "lucide-react";
+import { CopyIcon, XIcon } from "lucide-react";
 import {
   CommandDialog,
   CommandEmpty,
@@ -15,19 +13,20 @@ import {
   CommandSeparator,
   CommandShortcut,
 } from "@/components/ui/command";
-import { NAV, profile } from "@/data/profile";
-import { dfk, shooter } from "@/data/projects";
-import { JOBS, MAJOR_ORGS, MINOR_ORGS } from "@/data/experience";
-import { toggleTheme } from "@/lib/theme";
+import { TileArt } from "@/components/desktop/glyphs";
+import { APP_LIST, type Group } from "@/lib/desktop/apps";
+import { desktop } from "@/lib/desktop/store";
+import { profile } from "@/data/profile";
 
-const OPEN_EVENT = "command-menu:open";
+const OPEN_EVENT = "spotlight:open";
+const GROUPS: Group[] = ["Apps", "Folders", "Projects", "Experience", "Organizations", "Certificates", "Other"];
 
-/** Lets any button (e.g. the topbar search) open the palette without sharing React state. */
-export function openCommandMenu() {
+/** Lets any button (e.g. the menu-bar magnifier) open Spotlight without sharing React state. */
+export function openSpotlight() {
   window.dispatchEvent(new Event(OPEN_EVENT));
 }
 
-export async function copyEmail() {
+async function copyEmail() {
   try {
     await navigator.clipboard.writeText(profile.email);
     toast.success("Email copied", { description: profile.email });
@@ -48,39 +47,9 @@ function filter(value: string, search: string) {
   return 0.5 + (0.5 * wordStarts) / terms.length;
 }
 
-/** Glide to an element with the same easing as wheel scrolling (Lenis), or the browser's own scroll without it. */
-function jumpTo(id: string, lenis: Lenis | undefined) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  if (lenis) lenis.scrollTo(el, { force: true }); // stops at the element's scroll-margin-top
-  else el.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
-  history.replaceState(null, "", `#${id}`);
-}
-
-/**
- * Run `fn` once the dialog has fully closed: Radix removes <body data-scroll-locked> at the end of
- * the close animation, and only then does SmoothScroll restart Lenis (which would cancel a scroll
- * started earlier). Waiting also keeps the fading dialog out of the theme-transition snapshot.
- */
-function afterDialogClosed(fn: () => void) {
-  const body = document.body;
-  let done = false;
-  const go = () => {
-    if (done) return;
-    done = true;
-    mo.disconnect();
-    requestAnimationFrame(fn);
-  };
-  const mo = new MutationObserver(() => !body.hasAttribute("data-scroll-locked") && go());
-  mo.observe(body, { attributes: true, attributeFilter: ["data-scroll-locked"] });
-  if (!body.hasAttribute("data-scroll-locked")) go();
-  window.setTimeout(go, 600); // safety net if the attribute never changes
-}
-
-/** ⌘K / Ctrl+K palette: jump to any section or entry, or run a quick action. */
+/** ⌘K / Ctrl+K: macOS-style Spotlight that opens any window on the desktop. */
 export default function CommandMenu() {
   const [open, setOpen] = useState(false);
-  const lenis = useLenis();
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -98,86 +67,59 @@ export default function CommandMenu() {
     };
   }, []);
 
-  /** Close first so the dialog's scroll lock is released before we scroll or switch theme. */
-  const run = (fn: () => void) => () => {
+  const launch = (id: string, width: number) => () => {
     setOpen(false);
-    // Defer one frame so React has started closing the dialog before we watch for the unlock.
-    requestAnimationFrame(() => afterDialogClosed(fn));
-  };
-  /** New tabs must open synchronously inside the key/click event, or popup blockers stop them. */
-  const openTab = (url: string) => () => {
-    window.open(url, "_blank", "noopener");
-    setOpen(false);
+    desktop.open(id, width);
   };
 
   return (
     <CommandDialog
       open={open}
       onOpenChange={setOpen}
-      title="Command menu"
-      description="Jump to a section or run an action"
+      title="Spotlight"
+      description="Search the files, folders and apps on this desktop"
+      showCloseButton={false}
+      className="spotlight top-[16%] translate-y-0 sm:max-w-[620px]"
       commandProps={{ filter }}
     >
-      <CommandInput placeholder="Search sections, projects, experience…" />
+      <CommandInput placeholder="Spotlight Search" />
       <CommandList>
         <CommandEmpty>No results.</CommandEmpty>
-        <CommandGroup heading="Sections">
-          {NAV.map((s) => (
-            <CommandItem key={s.id} value={`section ${s.label}`} onSelect={run(() => jumpTo(s.id, lenis))}>
-              <HashIcon />
-              {s.label}
-            </CommandItem>
-          ))}
-        </CommandGroup>
-        <CommandGroup heading="Projects">
-          {[dfk, shooter].map((p) => (
-            <CommandItem key={p.id} value={`project ${p.title} ${p.tags.join(" ")}`} onSelect={run(() => jumpTo(p.id, lenis))}>
-              <FolderGitIcon />
-              {p.title}
-            </CommandItem>
-          ))}
-        </CommandGroup>
-        <CommandGroup heading="Experience">
-          {JOBS.map((j) => (
-            <CommandItem key={j.id} value={`work ${j.company} ${j.where}`} onSelect={run(() => jumpTo(j.id, lenis))}>
-              <BriefcaseIcon />
-              {j.company}
-            </CommandItem>
-          ))}
-          {[...MAJOR_ORGS, ...MINOR_ORGS].map((o) => (
-            <CommandItem key={o.id} value={`organization ${o.name}`} onSelect={run(() => jumpTo(o.id, lenis))}>
-              <UsersIcon />
-              {o.name}
-            </CommandItem>
-          ))}
-        </CommandGroup>
+        {GROUPS.map((g) => (
+          <CommandGroup key={g} heading={g}>
+            {APP_LIST.filter((a) => a.group === g).map((a) => (
+              <CommandItem key={a.id} value={`${a.name} ${a.file} ${g}`} onSelect={launch(a.id, a.width)}>
+                <span className="spot-ico">
+                  <TileArt id={a.id} size={20} />
+                </span>
+                {a.name}
+                <CommandShortcut>{a.file}</CommandShortcut>
+              </CommandItem>
+            ))}
+          </CommandGroup>
+        ))}
         <CommandSeparator />
         <CommandGroup heading="Actions">
-          <CommandItem value="copy email address" onSelect={run(copyEmail)}>
+          <CommandItem
+            value="copy email address contact"
+            onSelect={() => {
+              setOpen(false);
+              copyEmail();
+            }}
+          >
             <CopyIcon />
             Copy email
-          </CommandItem>
-          <CommandItem value="send email contact" onSelect={run(() => window.location.assign(`mailto:${profile.email}`))}>
-            <MailIcon />
-            Send an email
-          </CommandItem>
-          <CommandItem value="github code repositories" onSelect={openTab(profile.github)}>
-            <FolderGitIcon />
-            Open GitHub
-            <CommandShortcut>↗</CommandShortcut>
-          </CommandItem>
-          <CommandItem value="linkedin profile" onSelect={openTab(profile.linkedin)}>
-            <ExternalLinkIcon />
-            Open LinkedIn
-            <CommandShortcut>↗</CommandShortcut>
+            <CommandShortcut>{profile.email}</CommandShortcut>
           </CommandItem>
           <CommandItem
-            value="toggle theme dark light mode"
-            // run() waits for the dialog to close, so it isn't captured in the transition snapshot.
-            onSelect={run(() => toggleTheme())}
+            value="close all windows clear desktop"
+            onSelect={() => {
+              setOpen(false);
+              desktop.closeAll();
+            }}
           >
-            <MoonIcon />
-            Toggle dark / light mode
+            <XIcon />
+            Close all windows
           </CommandItem>
         </CommandGroup>
       </CommandList>

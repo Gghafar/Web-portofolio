@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { LiquidButton } from "@/components/ui/liquid-glass-button";
 
 const MAP = [
   "........................",
@@ -76,12 +77,13 @@ function los(a: Pt, b: Pt) {
 export default function PathfindingArena() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const playRef = useRef<HTMLButtonElement>(null);
+  const playLabelRef = useRef<HTMLSpanElement>(null);
   const resetRef = useRef<HTMLButtonElement>(null);
   const hudRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const canvas = canvasRef.current!, ctx = canvas.getContext("2d")!;
-    const playBtn = playRef.current!, resetBtn = resetRef.current!;
+    const playBtn = playRef.current!, resetBtn = resetRef.current!, playLabel = playLabelRef.current!;
     const $h = (k: string) => hudRef.current!.querySelector<HTMLElement>(`[data-hud="${k}"]`)!;
     const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
     let cell = 20, alpha = 1, G!: Game;
@@ -246,7 +248,8 @@ export default function PathfindingArena() {
       const go = visible && !paused && !document.hidden;
       if (go && !running) { running = true; last = 0; acc = 0; requestAnimationFrame(arenaLoop); }
       else if (!go) running = false;
-      playBtn.textContent = paused ? "Play" : "Pause";
+      // Only the label: the button also holds the liquid-glass layers.
+      playLabel.textContent = paused ? "Play" : "Pause";
       if (!running) { alpha = 1; draw(); }
     };
 
@@ -300,7 +303,7 @@ export default function PathfindingArena() {
   }, []);
 
   return (
-    <div className="demo" data-spotlight>
+    <div className="demo">
       <div className="demo-top">
         <p className="demo-title">Pathfinding arena</p>
         <span className="badge">Playable</span>
@@ -321,8 +324,13 @@ export default function PathfindingArena() {
         <canvas id="arena" ref={canvasRef} tabIndex={0} aria-label="Pathfinding arena. Click a cell or use arrow keys to move the player."></canvas>
       </div>
       <div className="arena-ctl">
-        <button className="btn sm" type="button" ref={playRef}>Pause</button>
-        <button className="btn sm" type="button" ref={resetRef}>Restart</button>
+        <LiquidButton type="button" size="sm" className="rounded-full font-semibold" ref={playRef}>
+          {/* syncArena() switches this between "Play" and "Pause". */}
+          <span ref={playLabelRef}>Pause</span>
+        </LiquidButton>
+        <LiquidButton type="button" size="sm" className="rounded-full font-semibold" ref={resetRef}>
+          Restart
+        </LiquidButton>
       </div>
       <p className="fine">Click or tap the arena to move (arrow keys work too). Zombies switch between Idle, Chase and Attack states and follow the shortest path around walls, using grid search as a stand-in for NavMesh. You fire a raycast at the nearest zombie in line of sight.</p>
     </div>
