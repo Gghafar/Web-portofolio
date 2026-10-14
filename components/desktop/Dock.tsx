@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useMotionValue, useSpring, useTransform, type MotionValue } from "motion/react";
-import { DockArt, dockBg, isGlassIcon, TileArt } from "./glyphs";
+import { DockArt, dockBg, TileArt } from "./glyphs";
 import { LiquidGlassLayers } from "@/components/ui/liquid-glass-button";
 import { APPS } from "@/lib/desktop/apps";
 import { desktop, useDesktop } from "@/lib/desktop/store";
@@ -29,7 +29,6 @@ export default function Dock() {
       mouseX={mouseX}
       label={d.label}
       bg={dockBg(d.app)}
-      glass={isGlassIcon(d.app)}
       running={d.running.some((id) => open.has(id))}
       onClick={(el) => desktop.open(d.app, APPS[d.app].width, el)}
     >
@@ -52,7 +51,7 @@ export default function Dock() {
         {DOCK_LINKS.map(item)}
         <span className="dock-sep" aria-hidden="true" />
         {DOCK_END.map(item)}
-        <DockButton mouseX={mouseX} label="Close all windows" bg={dockBg("closeAll")} glass running={false} onClick={() => desktop.closeAll()}>
+        <DockButton mouseX={mouseX} label="Close all windows" bg={dockBg("closeAll")} running={false} onClick={() => desktop.closeAll()}>
           <DockArt id="closeAll" />
         </DockButton>
         {minimized.length > 0 && <span className="dock-sep" aria-hidden="true" />}
@@ -77,7 +76,6 @@ function DockButton({
   mouseX,
   label,
   bg,
-  glass = false,
   running,
   onClick,
   children,
@@ -85,8 +83,6 @@ function DockButton({
   mouseX: MotionValue<number>;
   label: string;
   bg: string;
-  /** Clear glass tile (most apps) rather than a solid brand tile. */
-  glass?: boolean;
   running: boolean;
   onClick: (el: HTMLElement) => void;
   children: React.ReactNode;
@@ -104,7 +100,7 @@ function DockButton({
       <motion.button
         ref={ref}
         type="button"
-        className={glass ? "dock-btn dock-glass" : "dock-btn"}
+        className="dock-btn"
         aria-label={label}
         title={label}
         style={{ width: size, height: size, background: bg }}

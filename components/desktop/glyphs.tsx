@@ -3,19 +3,9 @@
  * Keyed by window id.
  */
 
-import {
-  Briefcase,
-  EnvelopeSimple,
-  FolderSimple,
-  Images,
-  Medal,
-  Trash,
-  User,
-  UsersThree,
-} from "@phosphor-icons/react/dist/ssr";
-import type { Icon as PhosphorIcon } from "@phosphor-icons/react";
-
 type Tile = { bg: string; art: React.ReactNode };
+
+const S = { fill: "none", strokeLinecap: "round", strokeLinejoin: "round" } as const;
 
 export const TILES: Record<string, Tile> = {
   about: {
@@ -274,25 +264,79 @@ export function TileArt({ id, size = 42 }: { id: string; size?: number }) {
   );
 }
 
-/**
- * Dock icons. Most are clear glass tiles with a coloured duotone glyph (Phosphor), matching the glass dock.
- * Brand apps (LinkedIn, Instagram) keep their official look instead: a filled tile with the brand mark.
- */
-type DockIcon =
-  | { kind: "glass"; color: string; Icon: PhosphorIcon }
-  | { kind: "brand"; bg: string; art: React.ReactNode };
+/** Dock icons: a coloured tile with a white or dark stroke glyph. */
+type DockGlyph = { bg: string; fg: string; art: React.ReactNode };
 
-const DOCK_ICONS: Record<string, DockIcon> = {
-  about: { kind: "glass", color: "#D9931A", Icon: User },
-  projects: { kind: "glass", color: "#2747B8", Icon: FolderSimple },
-  experience: { kind: "glass", color: "#1F7A52", Icon: Briefcase },
-  organizations: { kind: "glass", color: "#D03340", Icon: UsersThree },
-  certificates: { kind: "glass", color: "#7A5AF0", Icon: Medal },
-  photos: { kind: "glass", color: "#139A86", Icon: Images },
-  contact: { kind: "glass", color: "#2F6BFF", Icon: EnvelopeSimple },
-  closeAll: { kind: "glass", color: "#5F5E5A", Icon: Trash },
+export const DOCK_GLYPHS: Record<string, DockGlyph> = {
+  about: {
+    bg: "#F2C14E",
+    fg: "#111111",
+    art: (
+      <>
+        <circle cx="12" cy="8" r="4" />
+        <path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" />
+      </>
+    ),
+  },
+  projects: { bg: "#0E1B4D", fg: "#ffffff", art: <path d="M3 7h6l2 2h10v10H3z" /> },
+  experience: {
+    bg: "#1F4D3A",
+    fg: "#ffffff",
+    art: (
+      <>
+        <rect x="3" y="7" width="18" height="13" rx="2" />
+        <path d="M9 7V5h6v2M3 13h18" />
+      </>
+    ),
+  },
+  organizations: {
+    bg: "#C8232B",
+    fg: "#ffffff",
+    art: (
+      <>
+        <circle cx="9" cy="8" r="3" />
+        <circle cx="17" cy="9" r="2.5" />
+        <path d="M3 20c.8-3.5 3-5 6-5s5.2 1.5 6 5M15 15.5c2.6 0 4.4 1.3 5 4.5" />
+      </>
+    ),
+  },
+  certificates: {
+    bg: "#ffffff",
+    fg: "#111111",
+    art: (
+      <>
+        <circle cx="12" cy="9" r="6" />
+        <path d="M8.5 14 7 22l5-3 5 3-1.5-8" />
+      </>
+    ),
+  },
+  photos: {
+    bg: "#0F766E",
+    fg: "#ffffff",
+    art: (
+      <>
+        <rect x="3" y="5" width="18" height="14" rx="2" />
+        <circle cx="16" cy="9.5" r="1.5" />
+        <path d="m3 16 5-5 4 4 2.5-2.5L21 18" />
+      </>
+    ),
+  },
+  contact: {
+    bg: "#2F6BFF",
+    fg: "#ffffff",
+    art: (
+      <>
+        <rect x="3" y="5" width="18" height="14" rx="2" />
+        <path d="m3 7 9 6 9-6" />
+      </>
+    ),
+  },
+  closeAll: { bg: "#E4E4E0", fg: "#111111", art: <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" /> },
+};
+
+/** Brand apps keep their official mark, filled, on the brand's own colour (or gradient). */
+const BRAND_ICONS: Record<string, { bg: string; art: React.ReactNode }> = {
   github: {
-    kind: "brand",
     bg: "#1B1F24",
     // The GitHub mark (Invertocat), white on GitHub's near-black.
     art: (
@@ -303,7 +347,6 @@ const DOCK_ICONS: Record<string, DockIcon> = {
     ),
   },
   linkedin: {
-    kind: "brand",
     bg: "#0A66C2",
     art: (
       <g fill="#ffffff">
@@ -314,7 +357,6 @@ const DOCK_ICONS: Record<string, DockIcon> = {
     ),
   },
   instagram: {
-    kind: "brand",
     // The app icon's gradient: yellow bottom-left through orange and magenta to violet top-right.
     bg: "radial-gradient(circle at 30% 107%, #FDF497 0%, #FDF497 5%, #FD5949 45%, #D6249F 60%, #285AEB 90%)",
     art: (
@@ -327,24 +369,24 @@ const DOCK_ICONS: Record<string, DockIcon> = {
   },
 };
 
-/** Clear glass, so the dock's own glass shows through a little. */
-const GLASS_BG = "linear-gradient(180deg, rgba(255,255,255,.82) 0%, rgba(255,255,255,.5) 100%)";
-
 /** The glyph inside a dock button (or a desktop tile for windows without a dock icon, e.g. minimized ones). */
 export function DockArt({ id }: { id: string }) {
-  const g = DOCK_ICONS[id];
+  const brand = BRAND_ICONS[id];
+  if (brand)
+    return (
+      <svg viewBox="0 0 24 24" width="62%" height="62%" aria-hidden="true">
+        {brand.art}
+      </svg>
+    );
+  const g = DOCK_GLYPHS[id];
   if (!g) return <TileArt id={id} size={30} />;
-  if (g.kind === "glass") return <g.Icon weight="duotone" color={g.color} size="58%" aria-hidden="true" />;
   return (
-    <svg viewBox="0 0 24 24" width="62%" height="62%" aria-hidden="true">
+    <svg viewBox="0 0 24 24" width="55%" height="55%" stroke={g.fg} strokeWidth="1.8" {...S} aria-hidden="true">
       {g.art}
     </svg>
   );
 }
 
 export function dockBg(id: string) {
-  const g = DOCK_ICONS[id];
-  return !g || g.kind === "glass" ? GLASS_BG : g.bg;
+  return BRAND_ICONS[id]?.bg ?? DOCK_GLYPHS[id]?.bg ?? "#ffffff";
 }
-
-export const isGlassIcon = (id: string) => DOCK_ICONS[id]?.kind !== "brand";

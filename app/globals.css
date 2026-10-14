@@ -397,9 +397,6 @@
   .dock-btn::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:2;
     background:linear-gradient(180deg,rgba(255,255,255,.34) 0%,rgba(255,255,255,.08) 45%,rgba(255,255,255,0) 55%)}
   .dock-art{position:relative;z-index:1;display:grid;place-items:center;width:100%;height:100%}
-  /* glass tiles: white rim and a softer shadow; the coloured glyph carries the identity */
-  .dock-glass{box-shadow:inset 0 1px 1px rgba(255,255,255,.95),inset 0 0 0 1px rgba(255,255,255,.7),inset 0 -1px 1px rgba(0,0,0,.06),0 4px 12px rgba(0,0,0,.16)}
-  .dock-glass .dock-art svg{filter:drop-shadow(0 1px 1px rgba(0,0,0,.12))}
   .dock-btn:focus-visible{outline:2px solid var(--desk-ink);outline-offset:3px}
   .dock-dot{width:4px;height:4px;border-radius:50%;background:transparent}
   .dock-dot[data-on]{background:rgba(255,255,255,.95);box-shadow:0 0 0 .5px rgba(0,0,0,.35)}
