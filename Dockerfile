@@ -52,7 +52,7 @@ RUN npm run build
 # ───────────── Tahap web: SAJIKAN (image production) ─────────────
 # Nginx versi "unprivileged": berjalan sebagai user biasa (bukan root) → lebih aman.
 # Karena bukan root, ia mendengarkan di port 8080 (bukan 80).
-FROM nginxinc/nginx-unprivileged:1.29-alpine AS web
+FROM nginxinc/nginx-unprivileged:1.31-alpine AS web
 
 # Ganti pengaturan bawaan Nginx dengan milik kita.
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
